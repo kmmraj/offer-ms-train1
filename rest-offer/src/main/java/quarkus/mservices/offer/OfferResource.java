@@ -1,6 +1,8 @@
 package quarkus.mservices.offer;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -15,6 +17,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Path("/api/offers")
+@Tag(name = "Resource for Offer APIs")
+@Schema(description = "OfferResource API")
 public class OfferResource {
 
     @ConfigProperty(name = "offer.default.travel.days", defaultValue = "30")

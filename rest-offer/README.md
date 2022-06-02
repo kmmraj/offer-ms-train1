@@ -59,3 +59,16 @@ If you want to learn more about building native executables, please consult http
 Easily start your RESTful Web Services
 
 [Related guide section...](https://quarkus.io/guides/getting-started#the-jax-rs-resources)
+
+
+## Changes
+
+#### Ex-0: 
+- Created the working quarkus application
+#### Ex-1: 
+- Now run the application in dev mode and curl the application 'curl http://localhost:8087/api/offers'
+- Added the OpenAPI and Offer API with application parameters
+- Visit http://localhost:8087/q/dev/
+- Visit http://localhost:8087/q/swagger-ui/ to see the OpenAPI
+- Change the documentation and show the changes
+- 
