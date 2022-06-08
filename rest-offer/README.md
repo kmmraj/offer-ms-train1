@@ -71,4 +71,4 @@ Easily start your RESTful Web Services
 - Visit http://localhost:8087/q/dev/
 - Visit http://localhost:8087/q/swagger-ui/ to see the OpenAPI
 - Change the documentation and show the changes
-- 
+#### Ex-2:
