@@ -63,12 +63,18 @@ Easily start your RESTful Web Services
 
 ## Changes
 
-#### Ex-0: 
+#### Ex-0: Fundamentals
 - Created the working quarkus application
-#### Ex-1: 
+#### Ex-1: Define a working Rest API
 - Now run the application in dev mode and curl the application 'curl http://localhost:8087/api/offers'
 - Added the OpenAPI and Offer API with application parameters
 - Visit http://localhost:8087/q/dev/
 - Visit http://localhost:8087/q/swagger-ui/ to see the OpenAPI
 - Change the documentation and show the changes
-#### Ex-2:
+#### Ex-2: Tracing
+- install jaeger in docker
+#####
+  `docker run -p 5775:5775/udp -p 6831:6831/udp -p 6832:6832/udp -p 5778:5778 -p 16686:16686 -p 14268:14268
+  jaegertracing/all-in-one:latest`
+- Update the application properties to make it work
+- View the changes in the URL http://localhost:16686/search 
