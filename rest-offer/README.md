@@ -71,4 +71,42 @@ Easily start your RESTful Web Services
 - Visit http://localhost:8087/q/dev/
 - Visit http://localhost:8087/q/swagger-ui/ to see the OpenAPI
 - Change the documentation and show the changes
-#### Ex-2:
+#### Ex-2: Tracing
+- install jaeger in docker
+#####
+`docker run -p 5775:5775/udp -p 6831:6831/udp -p 6832:6832/udp -p 5778:5778 -p 16686:16686 -p 14268:14268
+jaegertracing/all-in-one:latest`
+- Update the application properties to make it work
+- View the changes in the URL http://localhost:16686/search 
+
+#### Ex-3: Security
+- install keycloak in docker
+#####
+`docker run --name keycloak -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin -p 8180:8080 jboss/keycloak`
+
+- Open the URL http://localhost:8180/auth/ (admin/admin)
+  - create a new realm called 'testrealm'
+  - create a client called 'backend-service'
+    - select client protocol 'openid-connect'
+  - create 2 roles
+    - admin
+    - user
+  - create 2 users (kadmin, kuser)
+    - Make the flags on for 
+      - user verified
+      - email verified
+    - set the credentials
+  - Assign user roles
+
+- Update the application properties to make it work
+   ```
+  quarkus.oidc.auth-server-url=http://localhost:8180/auth/realms/testrealm
+  quarkus.oidc.client-id=backend-service
+  ```
+
+- Add the pom dependency as follows
+  ``` 
+     <!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-oidc -->
+  ```
+- add a new API to test the user role
+- 
