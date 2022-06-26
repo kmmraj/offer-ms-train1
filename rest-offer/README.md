@@ -109,4 +109,41 @@ jaegertracing/all-in-one:latest`
      <!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-oidc -->
   ```
 - add a new API to test the user role
-- 
+
+#### Ex-4: Security with client ID
+
+
+- Open the URL http://localhost:8180/auth/ (admin/admin)
+  - create a new realm called 'cid-realm'
+  - create a client called 'backend-service'
+    - select client protocol 'openid-connect'
+      - make the "Access Type" as 'confidential'
+      - make redirect url as 'http://localhost:8087' (Port of the dev)
+      - select tab 'credentials' and select the value 'client id and secret' for the dropdown 'client authenticator'  
+      - copy the value for the field 'secret'
+      - and set that value in the application properties for the key 'quarkus.oidc.credentials.secret' (@refer#A )
+
+      - Update the application properties to make it work
+         ```
+        quarkus.oidc.auth-server-url=http://localhost:8180/auth/realms/cid-realm
+        quarkus.oidc.client-id=backend-service
+        quarkus.oidc.credentials.secret=<value from the @refer#A >
+        ```   
+
+      - create 2 roles
+        - admin
+        - user
+        - create 2 users (kadmin, kuser)
+          - Make the flags on for
+            - user verified
+            - email verified
+          - set the credentials
+        - Assign user roles
+
+
+
+- Add the pom dependency as follows
+  ``` 
+     <!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-oidc -->
+  ```
+- add a new API to test the user role

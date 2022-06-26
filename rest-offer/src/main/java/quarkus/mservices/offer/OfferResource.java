@@ -37,6 +37,7 @@ public class OfferResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/offers")
+    @RolesAllowed("user")
     public List<Offer> getOffers() {
         Offer offerOne = new Offer();
         offerOne.setId(UUID.randomUUID().toString().substring(0, 8));
@@ -45,7 +46,7 @@ public class OfferResource {
         offerOne.setFlightId(UUID.randomUUID().toString().substring(0, 5));
         offerOne.setOrigin("BCN");
         offerOne.setDepartureDate(Date.from(Instant.now().plus(defaultTravelDays, ChronoUnit.DAYS)));
-        logger.info(" Offer One is: " + offerOne);
+        logger.info(" Offer One is:: " + offerOne);
 
         return List.of(offerOne);
     }
