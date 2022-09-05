@@ -33,12 +33,12 @@ The application, packaged as an _über-jar_, is now runnable using `java -jar ta
 
 ## Creating a native executable
 
-You can create a native executable using: 
+You can create a native executable using:
 ```shell script
 ./mvnw package -Pnative
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
+Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
 ```shell script
 ./mvnw package -Pnative -Dquarkus.native.container-build=true
 ```
@@ -59,3 +59,134 @@ If you want to learn more about building native executables, please consult http
 Easily start your RESTful Web Services
 
 [Related guide section...](https://quarkus.io/guides/getting-started#the-jax-rs-resources)
+
+
+## Changes
+
+#### Ex-0:
+- Created the working quarkus application
+#### Ex-1:
+- Now run the application in dev mode and curl the application 'curl http://localhost:8087/api/offers'
+- Added the OpenAPI and Offer API with application parameters
+- Visit http://localhost:8087/q/dev/
+- Visit http://localhost:8087/q/swagger-ui/ to see the OpenAPI
+- Change the documentation and show the changes
+#### Ex-2: Tracing
+- install jaeger in docker
+#####
+`docker run -p 5775:5775/udp -p 6831:6831/udp -p 6832:6832/udp -p 5778:5778 -p 16686:16686 -p 14268:14268
+jaegertracing/all-in-one:latest`
+- Update the application properties to make it work
+- View the changes in the URL http://localhost:16686/search
+
+#### Ex-3: Security
+- install keycloak in docker
+#####
+`docker run --name keycloak -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin -p 8180:8080 jboss/keycloak`
+
+- Open the URL http://localhost:8180/auth/ (admin/admin)
+    - create a new realm called 'testrealm'
+    - create a client called 'backend-service'
+        - select client protocol 'openid-connect'
+    - create 2 roles
+        - admin
+        - user
+    - create 2 users (kadmin, kuser)
+        - Make the flags on for
+            - user verified
+            - email verified
+        - set the credentials
+    - Assign user roles
+
+- Update the application properties to make it work
+   ```
+  quarkus.oidc.auth-server-url=http://localhost:8180/auth/realms/testrealm
+  quarkus.oidc.client-id=backend-service
+  ```
+
+- Add the pom dependency as follows
+  ``` 
+     <!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-oidc -->
+   <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-oidc</artifactId>
+    </dependency>
+  ```
+- add a new API to test the user role
+
+#### Ex-4: Security with client ID and client secret (Password Grant)
+
+
+- Open the URL http://localhost:8180/auth/ (admin/admin)
+    - create a new realm called 'cid-password-realm' (Password grant type) (Not recommended - Only for Native Apps)
+    - create a client called 'backend-service'
+        - select client protocol 'openid-connect'
+            - make the "Access Type" as 'confidential'
+            - make redirect url as 'http://localhost:8087' (Port of the dev)
+            - make the "Authorization Enabled" as 'ON'
+            - select tab 'credentials' and select the value 'client id and secret' for the dropdown 'client authenticator'
+            - copy the value for the field 'secret'
+            - and set that value in the application properties for the key 'quarkus.oidc.credentials.secret' (@refer#A )
+
+            - Update the application properties to make it work
+               ```
+              quarkus.oidc.auth-server-url=http://localhost:8180/auth/realms/cid-realm
+              quarkus.oidc.client-id=backend-service
+              quarkus.oidc.credentials.secret=<value from the @refer#A >
+              ```   
+
+            - create 2 roles
+                - admin
+                - user
+                - create 2 users (kadmin, kuser)
+                    - Make the flags on for
+                        - user verified
+                        - email verified
+                    - set the credentials
+                - Assign user roles
+
+
+
+- Add the pom dependency as follows
+  ``` 
+     <!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-oidc -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-oidc</artifactId>
+    </dependency>
+  ```
+- add a new API to test the user role
+
+#### Ex-5: Security with client ID and client secret (Client Credentials Grant)
+
+
+- Open the URL http://localhost:8180/auth/ (admin/admin)
+    - create a new realm called 'cid-ccgrant-realm'
+    - create a client called 'backend-service'
+        - select client protocol 'openid-connect'
+            - make the "Access Type" as 'confidential'
+            - make redirect url as 'http://localhost:8087' (Port of the dev)
+            - make the "Service Accounts Enabled" as 'ON'
+            - select tab 'credentials' and select the value 'client id and secret' for the dropdown 'client authenticator'
+            - copy the value for the field 'secret'
+            - and set that value in the application properties for the key 'quarkus.oidc.credentials.secret' (@refer#A )
+
+            - Update the application properties to make it work
+               ```
+              quarkus.oidc.auth-server-url=http://localhost:8180/auth/realms/cid-ccgrant-realm
+              quarkus.oidc.client-id=backend-service
+              quarkus.oidc.credentials.secret=<value from the @refer#A >
+              ```   
+
+
+
+
+- Add the pom dependency as follows
+  ``` 
+     <!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-oidc -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-oidc</artifactId>
+    </dependency>
+  ```
+- add a new API to test the user role
