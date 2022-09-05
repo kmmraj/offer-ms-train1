@@ -12,16 +12,13 @@ import org.jboss.resteasy.annotations.cache.NoCache;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
-import javax.security.auth.AuthPermission;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 @Tag(name = "Resource for Offer APIs")
@@ -53,11 +50,8 @@ public class OfferResource {
 
     @Authenticated
     public List<Offer> getOffers() {
-        if(!jwt.getClaim("scope").toString().contains("offer:read")) {
-            throw new UnauthorizedException("Not authorized to access this resource");
-        }
-        securityIdentity.getAttributes();
-        securityIdentity.checkPermissionBlocking(new AuthPermission("offer:read"));
+        validateScope("offer:read");
+
         Offer offerOne = new Offer();
         offerOne.setId(UUID.randomUUID().toString().substring(0, 8));
         offerOne.setCabinClass(CabinClassEnum.ECONOMY);
@@ -66,8 +60,15 @@ public class OfferResource {
         offerOne.setOrigin("BCN");
         offerOne.setDepartureDate(Date.from(Instant.now().plus(defaultTravelDays, ChronoUnit.DAYS)));
         logger.info(" Offer One is:: " + offerOne);
-
         return List.of(offerOne);
+    }
+
+    private void validateScope(String expectedScope) {
+        Optional.ofNullable(jwt.getClaim("scope"))
+                .map(Object::toString)
+                .filter(s -> s.contains(expectedScope))
+                .stream().findFirst()
+                .orElseThrow(() -> new UnauthorizedException("User is not authorized to access this resource"));
     }
 
     @GET
