@@ -1,5 +1,7 @@
 package quarkus.mservices.offer;
 
+import io.quarkus.security.Authenticated;
+import io.quarkus.security.UnauthorizedException;
 import io.quarkus.security.identity.SecurityIdentity;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -49,14 +51,11 @@ public class OfferResource {
     @Path("/offers")
     @NoCache
 
-   // @Authenticated
-//    @RolesAllowed("user")
-  //  @RolesAllowed({"user","admin"})
-    //@PermitAll
+    @Authenticated
     public List<Offer> getOffers() {
-        jwt.getClaimNames();
-        jwt.getClaim("scope");
-       // scopes.size();
+        if(!jwt.getClaim("scope").toString().contains("offer:read")) {
+            throw new UnauthorizedException("Not authorized to access this resource");
+        }
         securityIdentity.getAttributes();
         securityIdentity.checkPermissionBlocking(new AuthPermission("offer:read"));
         Offer offerOne = new Offer();
