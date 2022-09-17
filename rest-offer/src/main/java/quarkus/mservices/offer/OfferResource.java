@@ -50,7 +50,7 @@ public class OfferResource {
 
     @Authenticated
     public List<Offer> getOffers() {
-        validateScope("offer:read");
+        //validateScope("offer:read");
 
         Offer offerOne = new Offer();
         offerOne.setId(UUID.randomUUID().toString().substring(0, 8));

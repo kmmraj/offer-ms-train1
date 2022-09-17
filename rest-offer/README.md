@@ -190,3 +190,5 @@ jaegertracing/all-in-one:latest`
     </dependency>
   ```
 - add a new API to test the user role
+
+#### Ex-6: Security with API serving on public UI (Authorization code grant with PKCE)
