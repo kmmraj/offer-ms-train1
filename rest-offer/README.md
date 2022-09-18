@@ -147,7 +147,7 @@ jaegertracing/all-in-one:latest`
 
 
 
-- Add the pom dependency as follows
+- Add the pom dependency as follows,if not exists
   ``` 
      <!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-oidc -->
     <dependency>
@@ -181,7 +181,7 @@ jaegertracing/all-in-one:latest`
 
 
 
-- Add the pom dependency as follows
+- Add the pom dependency as follows,if not exists
   ``` 
      <!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-oidc -->
     <dependency>
@@ -192,3 +192,39 @@ jaegertracing/all-in-one:latest`
 - add a new API to test the user role
 
 #### Ex-6: Security with API serving on public UI (Authorization code grant with PKCE)
+
+- Open the URL http://localhost:8180/auth/ (admin/admin)
+    - create a new realm called 'cid-authcode-pkce-grant-realm'
+    - create a client called 'backend-service'
+        - select client protocol 'openid-connect'
+            - select Login Theme as 'keycloak'
+            - make the "Access Type" as 'public'
+            - make the standard flow as 'ON'
+            - make redirect url as 'https://localhost:63342/ex3/rest-offer/index.html' (It is intelliJ idea built in web server)
+            - Refer https://www.jetbrains.com/help/idea/php-built-in-web-server.html#configuring-built-in-web-server
+            - Make Web Origins as "*"
+            - Expand the Advanced Settings section. 
+              - For the Proof Key for Code Exchange Code Challenge Method option, select S256
+            - Update the application properties to make it work
+
+               
+```
+              quarkus.oidc.auth-server-url=http://localhost:8180/auth/realms/cid-authcode-pkce-grant-realm
+              quarkus.oidc.client-id=backend-service
+              quarkus.http.auth.permission.authenticated.paths=/*
+              quarkus.http.auth.permission.authenticated.policy=authenticated
+ ``` 
+                
+
+
+
+
+- Add the pom dependency as follows, if not exists
+  ``` 
+     <!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-oidc -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-oidc</artifactId>
+    </dependency>
+  ```
+- Invoke the index.html in the browser (https://localhost:63342/ex3/rest-offer/index.html)

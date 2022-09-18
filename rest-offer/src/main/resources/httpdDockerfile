@@ -1,0 +1,3 @@
+FROM httpd:2.4
+#WORKDIR /src/main/resources
+COPY index.html /usr/local/apache2/htdocs/index.html
