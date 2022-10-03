@@ -71,7 +71,7 @@ Easily start your RESTful Web Services
 - Visit http://localhost:8087/q/dev/
 - Visit http://localhost:8087/q/swagger-ui/ to see the OpenAPI
 - Change the documentation and show the changes
-#### Ex-2: Tracing
+#### Ex-2: Tracing (Move it to after introducing the offer Price)
 - install jaeger in docker
 #####
 `docker run -p 5775:5775/udp -p 6831:6831/udp -p 6832:6832/udp -p 5778:5778 -p 16686:16686 -p 14268:14268
@@ -228,3 +228,33 @@ jaegertracing/all-in-one:latest`
     </dependency>
   ```
 - Invoke the index.html in the browser (https://localhost:63342/ex3/rest-offer/index.html)
+
+#### Ex-7: Offer getting the values from mysql database
+
+#### Ex-8: Deployment on Kubernetes
+
+- With docker image
+- With docker compose
+- Using kompose
+- With kubernetes
+- With persistent volume / persistent volume claim
+- With secret
+
+# Ex-9: Save the secret
+- Use k8s config maps
+- Use k8s secrets
+- Use valut secrets
+
+# Ex-10: Introduce the offer pricing
+
+# Ex-11: Introduce the offer pricing and failover mode with circuit breaker and hystrix(?)
+
+# Ex-12: Tracing with Jaeger
+
+# Ex-11 Load Balancing and Service discovery
+- Use Load Balancer
+- Use Ingress
+- Use Istio
+  - Use Istio Ingress Gateway
+  - Use Istio Virtual Service
+  - 
