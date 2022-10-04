@@ -229,7 +229,23 @@ jaegertracing/all-in-one:latest`
   ```
 - Invoke the index.html in the browser (https://localhost:63342/ex3/rest-offer/index.html)
 
-#### Ex-7: Offer getting the values from mysql database
+#### Ex-7: Offer getting the values from postgres database
+- Install the postgres database
+    - Using docker
+        - docker run --name postgres -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 arm64v8/postgres
+        - docker pull postgres
+        - docker run --name postgres -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 postgres
+        - docker exec -it postgres bash
+        - psql -U postgres
+        - create database offerdb;
+        - create user offeruser with encrypted password 'offeruser';
+        - grant all privileges on database offerdb to offeruser;
+        - \q
+        - exit
+    - Install the postgres client 
+      - sudo apt-get install postgresql-client
+      - https://dbeaver.io/
+
 
 #### Ex-8: Deployment on Kubernetes
 
@@ -240,21 +256,33 @@ jaegertracing/all-in-one:latest`
 - With persistent volume / persistent volume claim
 - With secret
 
-# Ex-9: Save the secret
+#### Ex-9: Save the secret
 - Use k8s config maps
 - Use k8s secrets
 - Use valut secrets
 
-# Ex-10: Introduce the offer pricing
+#### Ex-10: Introduce the offer pricing
 
-# Ex-11: Introduce the offer pricing and failover mode with circuit breaker and hystrix(?)
+#### Ex-11: Introduce the offer pricing and failover mode with circuit breaker and hystrix(?)
 
-# Ex-12: Tracing with Jaeger
+#### Ex-12: Tracing with Jaeger
 
-# Ex-11 Load Balancing and Service discovery
+#### Ex-11 Load Balancing and Service discovery
 - Use Load Balancer
 - Use Ingress
 - Use Istio
   - Use Istio Ingress Gateway
   - Use Istio Virtual Service
   - 
+
+#### Ex-12: Helm and Pulumi
+
+#### Ex-13: Monitoring with Prometheus and Grafana
+
+#### Ex-14: Logging with ELK
+
+#### Ex-15: API Gateway with Kong
+
+#### Ex-16: API Gateway with Istio
+
+#### Ex-17: Continuous Delivery with ArgoCD

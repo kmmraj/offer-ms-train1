@@ -3,6 +3,8 @@ package quarkus.mservices.offer;
 import lombok.*;
 
 import javax.json.bind.annotation.JsonbProperty;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.Date;
 
 @AllArgsConstructor
@@ -10,7 +12,9 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
+@Entity
 public class Offer {
+    @Id
     private String id;
     private String origin;
     private String destination;

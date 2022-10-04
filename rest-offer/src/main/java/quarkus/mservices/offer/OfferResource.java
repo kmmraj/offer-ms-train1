@@ -12,6 +12,7 @@ import org.jboss.resteasy.annotations.cache.NoCache;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -36,10 +37,9 @@ public class OfferResource {
     @Inject
     JsonWebToken jwt;
 
-//    @Inject
-//    @Claim("scope")
-//    Set<String> scopes;
 
+    @Inject
+    EntityManager em;
     @ConfigProperty(name = "offer.default.travel.days", defaultValue = "30")
     int defaultTravelDays;
 
