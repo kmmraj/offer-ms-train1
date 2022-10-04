@@ -7,8 +7,10 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.hibernate.annotations.Parameter;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.cache.NoCache;
+import quarkus.mservices.offer.repository.OfferRepository;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
@@ -52,16 +54,11 @@ public class OfferResource {
     public List<Offer> getOffers() {
         //validateScope("offer:read");
 
-        Offer offerOne = new Offer();
-        offerOne.setId(UUID.randomUUID().toString().substring(0, 8));
-        offerOne.setCabinClass(CabinClassEnum.ECONOMY);
-        offerOne.setDestination("MAD");
-        offerOne.setFlightId(UUID.randomUUID().toString().substring(0, 5));
-        offerOne.setOrigin("BCN");
-        offerOne.setDepartureDate(Date.from(Instant.now().plus(defaultTravelDays, ChronoUnit.DAYS)));
-        logger.info(" Offer One is:: " + offerOne);
-        return List.of(offerOne);
+        OfferRepository offerRepository = new OfferRepository();
+        return offerRepository.getOffersByFlightId("BCN", "MAD");
+
     }
+
 
     private void validateScope(String expectedScope) {
         Optional.ofNullable(jwt.getClaim("scope"))

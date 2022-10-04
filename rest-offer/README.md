@@ -204,10 +204,18 @@ jaegertracing/all-in-one:latest`
             - Refer https://www.jetbrains.com/help/idea/php-built-in-web-server.html#configuring-built-in-web-server
             - Make Web Origins as "*"
             - Expand the Advanced Settings section. 
-              - For the Proof Key for Code Exchange Code Challenge Method option, select S256
+              - For the Proof Key for Code Exchange Code Challenge Method option, select S256 
+            - Create user and assign roles 
+              - create 1 role 
+                - user 
+              - create 1 user (kuser)
+                - Make the flags on for 
+                  - user verified 
+                  - email verified 
+                  - set the credentials 
+                  - Assign user roles
             - Update the application properties to make it work
-
-               
+              
 ```
               quarkus.oidc.auth-server-url=http://localhost:8180/auth/realms/cid-authcode-pkce-grant-realm
               quarkus.oidc.client-id=backend-service
@@ -232,19 +240,56 @@ jaegertracing/all-in-one:latest`
 #### Ex-7: Offer getting the values from postgres database
 - Install the postgres database
     - Using docker
-        - docker run --name postgres -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 arm64v8/postgres
-        - docker pull postgres
-        - docker run --name postgres -e POSTGRES_PASSWORD=postgres -d -p 5432:5432 postgres
-        - docker exec -it postgres bash
-        - psql -U postgres
-        - create database offerdb;
-        - create user offeruser with encrypted password 'offeruser';
-        - grant all privileges on database offerdb to offeruser;
-        - \q
-        - exit
+          
+          docker run --name postgres -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 arm64v8/postgres
+          docker run --name postgres -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 postgres
+  
+           docker exec -it postgres bash
+           psql -U postgres
+           create database offerdb;
+           create user offeruser with encrypted password 'offeruser';
+           grant all privileges on database offerdb to offeruser;
+           \q
     - Install the postgres client 
       - sudo apt-get install postgresql-client
       - https://dbeaver.io/
+- Add the below to the pom.xml
+  ```
+    <!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-jdbc-postgresql -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jdbc-postgresql</artifactId>
+    </dependency>
+  
+    <!-- https://mvnrepository.com/artifact/io.quarkus/quarkus-hibernate-orm-panache -->
+   <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-hibernate-orm-panache</artifactId>
+    </dependency>
+  ```
+  
+- Add the below to the application.properties
+  ```
+    quarkus.datasource.db-kind = postgresql
+    quarkus.datasource.username = postgres
+    quarkus.datasource.password = mysecretpassword
+    quarkus.datasource.jdbc.url = jdbc:postgresql://localhost:5432/offerdb
+    
+    # drop and create the database at startup (use `update` to only update the schema)
+    quarkus.hibernate-orm.database.generation=drop-and-create
+  
+    %dev.quarkus.hibernate-orm.database.generation = drop-and-create
+    %dev.quarkus.hibernate-orm.sql-load-script = insert_offer.sql
+    
+    %dev-with-data.quarkus.hibernate-orm.database.generation = update
+    %dev-with-data.quarkus.hibernate-orm.sql-load-script = no-file
+    
+    %prod.quarkus.hibernate-orm.database.generation = none
+    %prod.quarkus.hibernate-orm.sql-load-script = no-file
+  ```
+  - Modify the class Offer to extend PanacheEntity
+  - Create a new class OfferRepository that extends PanacheRepository
+  - Modify the OfferResource to use the OfferRepository
 
 
 #### Ex-8: Deployment on Kubernetes

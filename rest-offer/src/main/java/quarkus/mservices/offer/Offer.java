@@ -1,5 +1,6 @@
 package quarkus.mservices.offer;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import lombok.*;
 
 import javax.json.bind.annotation.JsonbProperty;
@@ -13,7 +14,7 @@ import java.util.Date;
 @Setter
 @ToString
 @Entity
-public class Offer {
+public class Offer extends PanacheEntityBase {
     @Id
     private String id;
     private String origin;
