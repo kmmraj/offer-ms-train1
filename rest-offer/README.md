@@ -205,9 +205,17 @@ jaegertracing/all-in-one:latest`
             - Make Web Origins as "*"
             - Expand the Advanced Settings section. 
               - For the Proof Key for Code Exchange Code Challenge Method option, select S256
+            - Create user and assign roles
+              - create 1 role
+                - user
+              - create 1 user (kuser)
+                - Make the flags on for
+                    - user verified
+                    - email verified
+                - set the credentials
+                - Assign user roles
             - Update the application properties to make it work
-
-               
+             
 ```
               quarkus.oidc.auth-server-url=http://localhost:8180/auth/realms/cid-authcode-pkce-grant-realm
               quarkus.oidc.client-id=backend-service
