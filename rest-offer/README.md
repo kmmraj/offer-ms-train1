@@ -294,6 +294,49 @@ jaegertracing/all-in-one:latest`
 
 #### Ex-8: Deployment on Kubernetes
 
+- Build it with the below command
+  ```
+  
+  ./mvnw clean install -Dquarkus.container-image.builder=docker  
+  ./mvnw clean package -Dquarkus.container-image.build=true
+  ./mvnw clean package -Dquarkus.container-image.build=true -Dquarkus.container-image.push=true
+  ./mvnw clean package -Dquarkus.container-image.build=true -Dquarkus.container-image.push=true -Dquarkus.container-image.registry=quay.io
+  ./mvnw clean package -Pnative -Dquarkus.native.container-build=true -Dquarkus.container-image.push=true -Dquarkus.container-image.registry=quay.io
+  ```
+- Refer https://quarkus.io/guides/building-native-image
+- Refer https://quarkus.io/guides/deploying-to-kubernetes
+- Create a new namespace
+  ```
+  mvn clean package -Dquarkus.kubernetes.deploy=true
+  ```
+  
+ -- kubectl exec -it db-5b656447db-7fmpx -- /bin/bash
+
+        kubectl exec -it db-5b656447db-7fmpx -- /bin/bash
+        bash-5.1# psql -U postgres
+        psql (14.1)
+        Type "help" for help.
+        
+        postgres=# create database offerdb;
+        CREATE DATABASE
+        postgres=# create user offeruser with encrypted password 'offeruser';
+        CREATE ROLE
+        postgres=# grant all privileges on database offerdb to offeruser;
+        GRANT
+
+        postgres-# \c offerdb
+        You are now connected to database "offerdb" as user "postgres".
+
+        offerdb=# SELECT * FROM PUBLIC.OFFER;
+        id    | cabinclass |    departuredate    | destination | flightid | origin
+        ----------+------------+---------------------+-------------+----------+--------
+        f602f151 |          0 | 2023-10-24 09:42:00 | MAD         | 500ba    | BCN
+        f603f152 |          0 | 2023-10-24 11:42:00 | MAD         | 501ba    | BCN
+        f604f153 |          0 | 2023-10-24 13:42:00 | MAD         | 502ba    | BCN
+        (3 rows)
+
+        postgres=# \q
+
 - With docker image
 - With docker compose
 - Using kompose
