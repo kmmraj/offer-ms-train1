@@ -11,7 +11,7 @@ spec:
       targetPort: 8080
   selector:
     app: keycloak
-  type: LoadBalancer
+  type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -38,8 +38,8 @@ spec:
               value: "admin"
             - name: KEYCLOAK_ADMIN_PASSWORD
               value: "admin"
-            - name: KC_PROXY
-              value: "edge"
+#           - name: KEYCLOAK_HOSTNAME
+#             value: keycloak.yatn.ta #replace with ingress URL
           ports:
             - name: http
               containerPort: 8080
@@ -52,16 +52,12 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: keycloak
+  name: gateway-ingress
 spec:
-  tls:
-    - hosts:
-        - KEYCLOAK_HOST
   rules:
-    - host: KEYCLOAK_HOST
-      http:
+    - http:
         paths:
-          - path: /
+          - path: /auth
             pathType: Prefix
             backend:
               service:
