@@ -2,41 +2,38 @@
 apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    app.quarkus.io/commit-id: 95f47f9281315b861c295108f80d5abcc9ee202e
-    app.quarkus.io/build-timestamp: 2022-10-05 - 05:37:32 +0000
   labels:
-    app.kubernetes.io/name: offer
-    app.kubernetes.io/version: 1.1.0
-  name: offer
+    app.kubernetes.io/name: offer-api
+    app.kubernetes.io/version: 1.1.7
+  name: offer-api
 spec:
   ports:
     - name: http
       port: 80
       targetPort: 8085
   selector:
-    app.kubernetes.io/name: offer
-    app.kubernetes.io/version: 1.1.0
+    app.kubernetes.io/name: offer-api
+    app.kubernetes.io/version: 1.1.7
   type: LoadBalancer
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app.kubernetes.io/name: offer
-    app.kubernetes.io/version: 1.1.0
-  name: offer
+    app.kubernetes.io/name: offer-api
+    app.kubernetes.io/version: 1.1.7
+  name: offer-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: offer
-      app.kubernetes.io/version: 1.1.0
+      app.kubernetes.io/name: offer-api
+      app.kubernetes.io/version: 1.1.7
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: offer
-        app.kubernetes.io/version: 1.1.0
+        app.kubernetes.io/name: offer-api
+        app.kubernetes.io/version: 1.1.7
     spec:
       containers:
         - env:
@@ -44,19 +41,34 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-            - name: OFR_DB_NAME
-              value: offerdb
+            - name: OFR_DBNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: offer-api-config-map
+                  key: OFR_DBNAME
             - name: OFR_HOSTNAME
-              value: db # <--- This is the name of the service TODO - change to pg-db
+              valueFrom:
+                configMapKeyRef:
+                  name: offer-api-config-map
+                  key: OFR_HOSTNAME
             - name: OFR_PASSWORD
-              value: mysecretpassword
+              valueFrom:
+                 secretKeyRef:
+                   name: offer-api-secret
+                   key: OFR_PASSWORD
             - name: OFR_PORT
-              value: "5432"
+              valueFrom:
+                configMapKeyRef:
+                  name: offer-api-config-map
+                  key: OFR_PORT
             - name: OFR_USERNAME
-              value: postgres
-          image: docker.io/kmmraj/offer:1.1.6
-          imagePullPolicy: IfNotPresent
-          name: offer
+              valueFrom:
+                  configMapKeyRef:
+                    name: offer-api-config-map
+                    key: OFR_USERNAME
+          image: docker.io/kmmraj/offer:1.1.7
+          imagePullPolicy: Always
+          name: offer-api
           ports:
             - containerPort: 8085
               name: http

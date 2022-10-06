@@ -346,8 +346,24 @@ jaegertracing/all-in-one:latest`
 
 #### Ex-9: Save the secret
 - Use k8s config maps
+  - Using the kubectl command
+   
+         kubectl create configmap offer-api-config-map --from-literal=OFR_DBNAME=offerdb
+  - Create the config-map.yaml
+  - Apply the config map
+         
+         kubectl apply -f config-map.yaml
 - Use k8s secrets
-- Use valut secrets
+  - Using the kubectl command
+         
+         kubectl create secret generic offer-api-secret --from-literal=OFR_PASSWORD=mysecretpassword
+  - Apply the secret
+         
+         kubectl apply -f secret.yaml
+- Use vault secrets 
+
+[//]: # (  - TODO : to be explored - vault secrets)
+
 
 #### Ex-10: Introduce the offer pricing
 
@@ -374,3 +390,7 @@ jaegertracing/all-in-one:latest`
 #### Ex-16: API Gateway with Istio
 
 #### Ex-17: Continuous Delivery with ArgoCD
+
+#### Ex-18: Deploy the native image (jib)
+
+#### Ex-19: Deploy the s2i image (openshift)

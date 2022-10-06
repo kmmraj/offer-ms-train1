@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   labels:
     io.kompose.service: pg-db
-  name: db
+  name: pg-db
 spec:
   replicas: 1
   selector:
@@ -19,9 +19,16 @@ spec:
       containers:
         - env:
             - name: POSTGRES_PASSWORD
-              value: mysecretpassword
+              valueFrom:
+                secretKeyRef:
+                  name: offer-api-secret
+                  key: OFR_PASSWORD
             - name: POSTGRES_USER
-              value: postgres
+             # value: postgres
+              valueFrom:
+                  configMapKeyRef:
+                    name: offer-api-config-map
+                    key: OFR_USERNAME
           image: postgres:14.1-alpine
           name: db
           ports:
@@ -55,7 +62,7 @@ kind: Service
 metadata:
   labels:
     io.kompose.service: pg-db
-  name: db
+  name: pg-db
 spec:
   type: ClusterIP
   ports:

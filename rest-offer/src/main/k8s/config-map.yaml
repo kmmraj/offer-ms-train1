@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  OFR_DBNAME: offerdb
+  OFR_HOSTNAME: pg-db
+  OFR_PORT: "5432"
+  OFR_USERNAME: postgres
+  POSTGRES_USER: postgres
+kind: ConfigMap
+metadata:
+  name: offer-api-config-map
+  namespace: default
