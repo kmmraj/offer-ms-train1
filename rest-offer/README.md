@@ -222,9 +222,9 @@ jaegertracing/all-in-one:latest`
               quarkus.http.auth.permission.authenticated.paths=/*
               quarkus.http.auth.permission.authenticated.policy=authenticated
  ``` 
-                
 
 
+[//]: # (TODO: Add scope by check - https://www.helikube.de/part-2-running-fine-grained-keycloak-authorization-feature-with-quarkus/)
 
 
 - Add the pom dependency as follows, if not exists
