@@ -1,26 +1,23 @@
 package quarkus.mservices.offer;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import lombok.*;
 
 import javax.json.bind.annotation.JsonbProperty;
-import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.util.Date;
+import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@Entity
-public class Offer extends PanacheEntityBase {
+public class OfferDTO {
     @Id
     private String id;
     private String origin;
     private String destination;
-    @JsonbProperty("departure_date")
-    private Date departureDate;
+    @JsonbProperty("travel_date")
+    private LocalDate travelDate;
     @JsonbProperty("cabin_class")
     private CabinClassEnum cabinClass;
     @JsonbProperty("flight_id")

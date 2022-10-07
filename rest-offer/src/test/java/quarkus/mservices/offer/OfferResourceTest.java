@@ -10,7 +10,7 @@ import static org.hamcrest.CoreMatchers.is;
 public class OfferResourceTest {
 
 
-   // @Test()
+    @Test()
     public void testHelloEndpoint() {
         given()
           .when().get("/api/offers")
