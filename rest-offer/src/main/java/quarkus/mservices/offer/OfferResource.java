@@ -9,6 +9,7 @@ import quarkus.mservices.offer.repository.OfferRepository;
 
 import javax.annotation.security.PermitAll;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -54,17 +55,20 @@ public class OfferResource {
         logger.info("getOffers with: " + origin + " and " + destination + " and " + localDate);
         List<Offer> offerList = offerRepository.getOffersByOriginAndDestinationAndTravelDate(origin, destination,localDate);
         return offerList.stream()
-                .map(offer -> {
-                    OfferDTO offerDTO = new OfferDTO();
-                    offerDTO.setId(offer.getId());
-                    offerDTO.setOrigin(offer.getOrigin());
-                    offerDTO.setDestination(offer.getDestination());
-                    offerDTO.setCabinClass(offer.getCabinClass());
-                    offerDTO.setFlightId(offer.getFlightId());
-                    offerDTO.setTravelDate(localDate);
-                    return offerDTO;
-                })
+                .map(offer -> getOfferDTO(localDate, offer))
                 .toList();
+    }
+
+    @NotNull
+    private OfferDTO getOfferDTO(LocalDate localDate, Offer offer) {
+        OfferDTO offerDTO = new OfferDTO();
+        offerDTO.setId(offer.getId());
+        offerDTO.setOrigin(offer.getOrigin());
+        offerDTO.setDestination(offer.getDestination());
+        offerDTO.setCabinClass(offer.getCabinClass());
+        offerDTO.setFlightId(offer.getFlightId());
+        offerDTO.setTravelDate(localDate);
+        return offerDTO;
     }
 
 
