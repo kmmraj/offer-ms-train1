@@ -30,6 +30,7 @@ public class OfferResource {
     Logger logger;
     @Inject
     OfferRepository offerRepository;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/offers/orig/{origin}/dest/{destination}")
@@ -49,14 +50,12 @@ public class OfferResource {
     //@Authenticated
     @PermitAll
     public List<OfferDTO> getOffers(@PathParam("origin") String origin,
-                                 @PathParam("destination") String destination,
-                                 @PathParam("travelDate") String travelDate) {
+                                    @PathParam("destination") String destination,
+                                    @PathParam("travelDate") String travelDate) {
         LocalDate localDate = LocalDate.parse(travelDate, DateTimeFormatter.ISO_LOCAL_DATE);
         logger.info("getOffers with: " + origin + " and " + destination + " and " + localDate);
-        List<Offer> offerList = offerRepository.getOffersByOriginAndDestinationAndTravelDate(origin, destination,localDate);
-        return offerList.stream()
-                .map(offer -> getOfferDTO(localDate, offer))
-                .toList();
+        List<Offer> offerList = offerRepository.getOffersByOriginAndDestinationAndTravelDate(origin, destination, localDate);
+        return offerList.stream().map(offer -> getOfferDTO(localDate, offer)).toList();
     }
 
     @NotNull

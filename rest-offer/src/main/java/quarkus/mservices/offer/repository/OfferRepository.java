@@ -14,8 +14,11 @@ public class OfferRepository implements PanacheRepositoryBase<Offer, String> {
         return list("origin = ?1 and destination = ?2", origin, destination);
     }
 
-    public List<Offer> getOffersByOriginAndDestinationAndTravelDate(String origin, String destination, LocalDate travelDate) {
-        return list("origin = ?1 and destination = ?2 and startDate <= ?3 and endDate >= ?3", origin, destination, travelDate);
+    public List<Offer> getOffersByOriginAndDestinationAndTravelDate(String origin,
+                                                                    String destination,
+                                                                    LocalDate travelDate) {
+        return list("origin = ?1 and destination = ?2 and startDate <= ?3 and endDate >= ?3",
+                origin, destination, travelDate);
     }
 
 }

@@ -13,9 +13,9 @@ public class OfferResourceTest {
     @Test()
     public void testHelloEndpoint() {
         given()
-          .when().get("/api/offers")
-          .then()
-             .statusCode(200);
+                .when().get("/api/offers")
+                .then()
+                .statusCode(200);
     }
 
 }

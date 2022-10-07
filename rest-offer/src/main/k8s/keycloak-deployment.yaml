@@ -32,14 +32,14 @@ spec:
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:19.0.2
-          args: ["start-dev"]
+          args: [ "start-dev" ]
           env:
             - name: KEYCLOAK_ADMIN
               value: "admin"
             - name: KEYCLOAK_ADMIN_PASSWORD
               value: "admin"
-#           - name: KEYCLOAK_HOSTNAME
-#             value: keycloak.yatn.ta #replace with ingress URL
+          #           - name: KEYCLOAK_HOSTNAME
+          #             value: keycloak.yatn.ta #replace with ingress URL
           ports:
             - name: http
               containerPort: 8080

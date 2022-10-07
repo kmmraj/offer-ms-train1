@@ -53,9 +53,9 @@ spec:
                   key: OFR_HOSTNAME
             - name: OFR_PASSWORD
               valueFrom:
-                 secretKeyRef:
-                   name: offer-api-secret
-                   key: OFR_PASSWORD
+                secretKeyRef:
+                  name: offer-api-secret
+                  key: OFR_PASSWORD
             - name: OFR_PORT
               valueFrom:
                 configMapKeyRef:
@@ -63,9 +63,9 @@ spec:
                   key: OFR_PORT
             - name: OFR_USERNAME
               valueFrom:
-                  configMapKeyRef:
-                    name: offer-api-config-map
-                    key: OFR_USERNAME
+                configMapKeyRef:
+                  name: offer-api-config-map
+                  key: OFR_USERNAME
           image: docker.io/kmmraj/offer:1.1.7
           imagePullPolicy: Always
           name: offer-api
