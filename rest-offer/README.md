@@ -367,6 +367,7 @@ jaegertracing/all-in-one:latest`
 
 #### Ex-10: Introduce the offer pricing
 
+- Create a new microservice offer-price
          ```
           mvn io.quarkus.platform:quarkus-maven-plugin:2.13.2.Final:create \
             -DprojectGroupId=quarkus.mservices.offerprice \
@@ -374,6 +375,45 @@ jaegertracing/all-in-one:latest`
             -Dextensions='resteasy-reactive'
           cd rest-offer-price
         ```
+- Add the below to the application.properties
+  ```
+    uarkus.http.port=8095
+    %dev.quarkus.http.port=8097
+    %test.quarkus.http.port=8099
+
+    # datasource configuration
+    quarkus.datasource.db-kind = postgresql
+    quarkus.datasource.username = ${OFR_USERNAME:postgres}
+    quarkus.datasource.password = ${OFR_PASSWORD:mysecretpassword}
+    quarkus.datasource.jdbc.url = jdbc:postgresql://${OFR_HOSTNAME:localhost}:${OFR_PORT:5432}/${OFR_DBNAME:offerdb}
+    # drop and create the database at startup (use `update` to only update the schema)
+    quarkus.hibernate-orm.database.generation=drop-and-create
+    
+    %dev.quarkus.hibernate-orm.database.generation = drop-and-create
+    %dev.quarkus.hibernate-orm.sql-load-script = insert_offer_price.sql
+    
+    %dev-with-data.quarkus.hibernate-orm.database.generation = update
+    %dev-with-data.quarkus.hibernate-orm.sql-load-script = insert_offer_price.sql
+    
+    %prod.quarkus.hibernate-orm.database.generation = drop-and-create
+    %prod.quarkus.hibernate-orm.sql-load-script = insert_offer_price.sql
+  ```
+- Create a new class OfferPrice that extends PanacheEntity
+- Create a new class OfferPriceRepository that extends PanacheRepositoryBase
+- Create a new class OfferPriceResource
+  - Create the endpoint to get the offer price by id
+- Add the below to the pom.xml (rest-offer)
+ 
+        ```
+         <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-rest-client</artifactId>
+           </dependency> 
+         ```
+  - Create a new interface OfferPriceProxy
+  - 
+
+- Add the below to the application.properties
 
 #### Ex-11: Introduce the offer pricing and failover mode with circuit breaker and hystrix(?)
 

@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString
-public class OfferDTO {
+public class OfferExtendedDTO {
     @Id
     private String id;
     private String origin;
@@ -23,4 +23,6 @@ public class OfferDTO {
     private CabinClassEnum cabinClass;
     @JsonbProperty("flight_id")
     private String flightId;
+    private BigDecimal price;
+    private String currency;
 }

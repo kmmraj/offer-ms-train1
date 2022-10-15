@@ -2,6 +2,8 @@ package quarkus.mservices.offer;
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.graalvm.collections.Pair;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import quarkus.mservices.offer.repository.Offer;
@@ -31,6 +33,11 @@ public class OfferResource {
     @Inject
     OfferRepository offerRepository;
 
+    @Inject
+    @RestClient
+    OfferPriceProxy offerPriceProxy;
+
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/offers/orig/{origin}/dest/{destination}")
@@ -49,13 +56,19 @@ public class OfferResource {
     @NoCache
     //@Authenticated
     @PermitAll
-    public List<OfferDTO> getOffers(@PathParam("origin") String origin,
-                                    @PathParam("destination") String destination,
-                                    @PathParam("travelDate") String travelDate) {
+    public List<OfferExtendedDTO> getOffers(@PathParam("origin") String origin,
+                                            @PathParam("destination") String destination,
+                                            @PathParam("travelDate") String travelDate) {
         LocalDate localDate = LocalDate.parse(travelDate, DateTimeFormatter.ISO_LOCAL_DATE);
         logger.info("getOffers with: " + origin + " and " + destination + " and " + localDate);
         List<Offer> offerList = offerRepository.getOffersByOriginAndDestinationAndTravelDate(origin, destination, localDate);
-        return offerList.stream().map(offer -> getOfferDTO(localDate, offer)).toList();
+//        OfferPriceDTO offerPriceDTO = offerPriceProxy.getOfferPrice(offerList.get(0).getId());
+        return offerList
+                .stream()
+                .map(offer -> Pair.create(offerPriceProxy.getOfferPrice(offer.getId()),offer))
+                .map(pair ->  getOfferExtendedDTO(pair.getLeft(), pair.getRight(),localDate))
+                .toList();
+
     }
 
     @NotNull
@@ -68,6 +81,20 @@ public class OfferResource {
         offerDTO.setFlightId(offer.getFlightId());
         offerDTO.setTravelDate(localDate);
         return offerDTO;
+    }
+
+    @NotNull
+    private OfferExtendedDTO getOfferExtendedDTO(OfferPriceDTO offerPriceDTO, Offer offer, LocalDate localDate) {
+        OfferExtendedDTO offerExtendedDTO = new OfferExtendedDTO();
+        offerExtendedDTO.setId(offer.getId());
+        offerExtendedDTO.setOrigin(offer.getOrigin());
+        offerExtendedDTO.setDestination(offer.getDestination());
+        offerExtendedDTO.setCabinClass(offer.getCabinClass());
+        offerExtendedDTO.setFlightId(offer.getFlightId());
+        offerExtendedDTO.setTravelDate(localDate);
+        offerExtendedDTO.setPrice(offerPriceDTO.getPrice());
+        offerExtendedDTO.setCurrency(offerPriceDTO.getCurrency());
+        return offerExtendedDTO;
     }
 
 

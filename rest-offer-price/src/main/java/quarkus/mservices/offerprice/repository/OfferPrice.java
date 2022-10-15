@@ -18,4 +18,5 @@ public class OfferPrice extends PanacheEntityBase {
     private String id;
     private String offerId;
     private BigDecimal price;
+    private String currency;
 }

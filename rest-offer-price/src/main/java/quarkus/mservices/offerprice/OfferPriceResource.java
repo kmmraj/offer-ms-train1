@@ -24,8 +24,17 @@ public class OfferPriceResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "OfferPrice by offerId", description = "Get OfferPrice by offerId")
     @Path("/offer-price/offer/{offerId}")
-    public List<OfferPrice> getOfferPrice(@PathParam("offerId") String offerId) {
+    public OfferPriceDTO getOfferPrice(@PathParam("offerId") String offerId) {
         logger.info("getOfferPrice with: " + offerId);
-        return offerPriceRepository.getOffersPriceByOfferId(offerId);
+        OfferPrice offerPrice =  offerPriceRepository.getOffersPriceByOfferId(offerId);
+        return getOfferPriceDTO(offerPrice);
+    }
+
+    private static OfferPriceDTO getOfferPriceDTO(OfferPrice offerPrice) {
+        OfferPriceDTO offerPriceDTO = new OfferPriceDTO();
+        offerPriceDTO.setOfferId(offerPrice.getOfferId());
+        offerPriceDTO.setPrice(offerPrice.getPrice());
+        offerPriceDTO.setCurrency(offerPrice.getCurrency());
+        return offerPriceDTO;
     }
 }
