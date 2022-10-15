@@ -372,6 +372,7 @@ jaegertracing/all-in-one:latest`
 #### Ex-12: Tracing with Jaeger
 
 #### Ex-11 Load Balancing and Service discovery
+- Use stock quarkus
 - Use Load Balancer
 - Use Ingress
 - Use Istio
