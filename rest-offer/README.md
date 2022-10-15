@@ -367,6 +367,14 @@ jaegertracing/all-in-one:latest`
 
 #### Ex-10: Introduce the offer pricing
 
+         ```
+          mvn io.quarkus.platform:quarkus-maven-plugin:2.13.2.Final:create \
+            -DprojectGroupId=quarkus.mservices.offerprice \
+            -DprojectArtifactId=rest-offer-price \
+            -Dextensions='resteasy-reactive'
+          cd rest-offer-price
+        ```
+
 #### Ex-11: Introduce the offer pricing and failover mode with circuit breaker and hystrix(?)
 
 #### Ex-12: Tracing with Jaeger
