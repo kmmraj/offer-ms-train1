@@ -8,7 +8,6 @@ import quarkus.mservices.offerprice.repository.OfferPriceRepository;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 @Path("/api")
 
@@ -37,4 +36,5 @@ public class OfferPriceResource {
         offerPriceDTO.setCurrency(offerPrice.getCurrency());
         return offerPriceDTO;
     }
+
 }

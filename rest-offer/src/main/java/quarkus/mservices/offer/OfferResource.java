@@ -1,5 +1,9 @@
 package quarkus.mservices.offer;
 
+import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
+import org.eclipse.microprofile.faulttolerance.Fallback;
+import org.eclipse.microprofile.faulttolerance.Retry;
+import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -17,8 +21,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 
@@ -54,6 +60,10 @@ public class OfferResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/offers/orig/{origin}/dest/{destination}/date/{travelDate}")
     @NoCache
+    @Fallback(fallbackMethod = "getOfferPriceFallBack")
+  //  @Timeout(value = 5000, unit = ChronoUnit.MILLIS)
+//    @Retry(maxRetries = 5, delay = 100, maxDuration = 5000, jitter = 10)
+    @CircuitBreaker(requestVolumeThreshold = 4, failureRatio = 0.75, delay = 1000, successThreshold = 2)
     //@Authenticated
     @PermitAll
     public List<OfferExtendedDTO> getOffers(@PathParam("origin") String origin,
@@ -62,10 +72,26 @@ public class OfferResource {
         LocalDate localDate = LocalDate.parse(travelDate, DateTimeFormatter.ISO_LOCAL_DATE);
         logger.info("getOffers with: " + origin + " and " + destination + " and " + localDate);
         List<Offer> offerList = offerRepository.getOffersByOriginAndDestinationAndTravelDate(origin, destination, localDate);
-//        OfferPriceDTO offerPriceDTO = offerPriceProxy.getOfferPrice(offerList.get(0).getId());
         return offerList
                 .stream()
                 .map(offer -> Pair.create(offerPriceProxy.getOfferPrice(offer.getId()),offer))
+                .map(pair ->  getOfferExtendedDTO(pair.getLeft(), pair.getRight(),localDate))
+                .toList();
+
+    }
+
+//    @GET
+//    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/offers/orig/{origin}/dest/{destination}/date/{travelDate}")
+    public List<OfferExtendedDTO> getOfferPriceFallBack(@PathParam("origin") String origin,
+                                            @PathParam("destination") String destination,
+                                            @PathParam("travelDate") String travelDate) {
+        LocalDate localDate = LocalDate.parse(travelDate, DateTimeFormatter.ISO_LOCAL_DATE);
+        logger.info("getOffers with: " + origin + " and " + destination + " and " + localDate);
+        List<Offer> offerList = offerRepository.getOffersByOriginAndDestinationAndTravelDate(origin, destination, localDate);
+        return offerList
+                .stream()
+                .map(offer -> Pair.create(new OfferPriceDTO("1",offer.getId(), BigDecimal.valueOf(50.0),"EUR" )  ,offer))
                 .map(pair ->  getOfferExtendedDTO(pair.getLeft(), pair.getRight(),localDate))
                 .toList();
 
@@ -97,5 +123,7 @@ public class OfferResource {
         return offerExtendedDTO;
     }
 
-
+    public OfferPriceDTO getOfferPriceFallBack(String offerId) {
+        return new OfferPriceDTO("1", offerId, new java.math.BigDecimal(20), "EUR");
+    }
 }

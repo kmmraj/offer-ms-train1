@@ -365,7 +365,7 @@ jaegertracing/all-in-one:latest`
 [//]: # (  - TODO : to be explored - vault secrets)
 
 
-#### Ex-10: Introduce the offer pricing
+#### Ex-10: Introduce the offer pricing and failover mode with circuit breaker and fallback
 
 - Create a new microservice offer-price
          ```
@@ -415,7 +415,7 @@ jaegertracing/all-in-one:latest`
 
 - Add the below to the application.properties
 
-#### Ex-11: Introduce the offer pricing and failover mode with circuit breaker and hystrix(?)
+#### Ex-11: Introduce gRPC
 
 #### Ex-12: Tracing with Jaeger
 
