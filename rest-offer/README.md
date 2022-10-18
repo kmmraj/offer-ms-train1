@@ -375,47 +375,101 @@ jaegertracing/all-in-one:latest`
             -Dextensions='resteasy-reactive'
           cd rest-offer-price
         ```
-- Add the below to the application.properties
-  ```
-    uarkus.http.port=8095
-    %dev.quarkus.http.port=8097
-    %test.quarkus.http.port=8099
 
-    # datasource configuration
-    quarkus.datasource.db-kind = postgresql
-    quarkus.datasource.username = ${OFR_USERNAME:postgres}
-    quarkus.datasource.password = ${OFR_PASSWORD:mysecretpassword}
-    quarkus.datasource.jdbc.url = jdbc:postgresql://${OFR_HOSTNAME:localhost}:${OFR_PORT:5432}/${OFR_DBNAME:offerdb}
-    # drop and create the database at startup (use `update` to only update the schema)
-    quarkus.hibernate-orm.database.generation=drop-and-create
-    
-    %dev.quarkus.hibernate-orm.database.generation = drop-and-create
-    %dev.quarkus.hibernate-orm.sql-load-script = insert_offer_price.sql
-    
-    %dev-with-data.quarkus.hibernate-orm.database.generation = update
-    %dev-with-data.quarkus.hibernate-orm.sql-load-script = insert_offer_price.sql
-    
-    %prod.quarkus.hibernate-orm.database.generation = drop-and-create
-    %prod.quarkus.hibernate-orm.sql-load-script = insert_offer_price.sql
+  ```
+- Update pom.xml
+  ```
+   <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Hibernate ORM specific dependencies -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-hibernate-orm</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-hibernate-orm-panache</artifactId>
+    </dependency>
+
+    <!-- JDBC driver dependencies -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jdbc-postgresql</artifactId>
+    </dependency>
   ```
 - Create a new class OfferPrice that extends PanacheEntity
 - Create a new class OfferPriceRepository that extends PanacheRepositoryBase
 - Create a new class OfferPriceResource
-  - Create the endpoint to get the offer price by id
-- Add the below to the pom.xml (rest-offer)
- 
-        ```
-         <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-rest-client</artifactId>
-           </dependency> 
-         ```
-  - Create a new interface OfferPriceProxy
-  - 
+- Create the endpoint to get the offer price by id
 
-- Add the below to the application.properties
+
+- - Add the below to the application.properties
+```
+  quarkus.http.port=8095
+  %dev.quarkus.http.port=8097
+  %test.quarkus.http.port=8099
+
+  # datasource configuration
+  quarkus.datasource.db-kind = postgresql
+  quarkus.datasource.username = ${OFR_USERNAME:postgres}
+  quarkus.datasource.password = ${OFR_PASSWORD:mysecretpassword}
+  quarkus.datasource.jdbc.url = jdbc:postgresql://${OFR_HOSTNAME:localhost}:${OFR_PORT:5432}/${OFR_DBNAME:offerdb}
+  # drop and create the database at startup (use `update` to only update the schema)
+  quarkus.hibernate-orm.database.generation=drop-and-create
+  
+  %dev.quarkus.hibernate-orm.database.generation = drop-and-create
+  %dev.quarkus.hibernate-orm.sql-load-script = insert_offer_price.sql
+  
+  %dev-with-data.quarkus.hibernate-orm.database.generation = update
+  %dev-with-data.quarkus.hibernate-orm.sql-load-script = insert_offer_price.sql
+  
+  %prod.quarkus.hibernate-orm.database.generation = drop-and-create
+  %prod.quarkus.hibernate-orm.sql-load-script = insert_offer_price.sql
+  ```
+- You should be able to call the offer price endpoint and get the offer price
+
+- Now, lets update the offer to call offer price API and get the price details
+  - Add the below to the pom.xml (rest-offer)
+
+          ```
+           <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-rest-client</artifactId>
+             </dependency> 
+           ```
+  - Create a new interface OfferPriceProxy
+  - Inject the OfferPriceProxy in the OfferResource
+       ```
+        @Inject
+        @RestClient
+        OfferPriceProxy offerPriceProxy;
+    ```
+  - Create new DTO OfferExtendedDTO that includes the offer and the offer price
+  - Change the return type of the endpoint to return the OfferExtendedDTO
+  - For the every offer, call the offer price API and get the price details as below
+     ```
+            return offerList
+                .stream()
+                .map(offer -> Pair.create(offerPriceProxy.getOfferPrice(offer.getId()),offer))
+                .map(pair ->  getOfferExtendedDTO(pair.getLeft(), pair.getRight(),localDate))
+                .toList();
+    ```
+  - You should be able to call the offer endpoint and get the offer price details
+  - Now introduce the following
+    - Circuit breaker
+    - Fallback
+    - Retry
+    - Timeout
+
 
 #### Ex-11: Introduce gRPC
+
 
 #### Ex-12: Tracing with Jaeger
 
