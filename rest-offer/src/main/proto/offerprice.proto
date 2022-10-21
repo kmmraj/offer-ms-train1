@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "quarkus.mservices.offerprice";
+option java_outer_classname = "OfferPriceProto";
+option objc_class_prefix = "HLW";
+
+package offerprice;
+
+service OfferPriceServiceInterface {
+  rpc GetOfferPrice (OfferPriceRequest) returns (OfferPriceResponse) {}
+}
+
+message OfferPriceRequest {
+  string offer_id = 1;
+}
+
+message OfferPriceResponse {
+  string id = 1;
+  string offer_id = 2;
+  string price = 3;
+  string currency = 4;
+}
+
+message BInteger {
+   bytes value = 1;
+}

@@ -514,7 +514,9 @@ jaegertracing/all-in-one:latest`
 - Create a new class OfferPriceService
 - Create a new class OfferPriceEndpoint
 - The endpoint should return the offer price by id (curl -X GET http://0.0.0.0:8097/api/offer-price/offer/f601f151)
-- 
+
+#### Ex-12: Call the grpc service from the rest service
+
 
   
 

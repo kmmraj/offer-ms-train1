@@ -2,7 +2,7 @@ package quarkus.mservices.offer;
 
 import lombok.*;
 
-import javax.json.bind.annotation.JsonbProperty;
+//import javax.json.bind.annotation.JsonbProperty;
 import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,10 +17,10 @@ public class OfferDTO {
     private String id;
     private String origin;
     private String destination;
-    @JsonbProperty("travel_date")
+//    @JsonbProperty("travel_date")
     private LocalDate travelDate;
-    @JsonbProperty("cabin_class")
+//    @JsonbProperty("cabin_class")
     private CabinClassEnum cabinClass;
-    @JsonbProperty("flight_id")
+//    @JsonbProperty("flight_id")
     private String flightId;
 }

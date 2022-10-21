@@ -1,5 +1,6 @@
 package quarkus.mservices.offer;
 
+import io.quarkus.grpc.GrpcClient;
 import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Retry;
@@ -12,6 +13,9 @@ import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import quarkus.mservices.offer.repository.Offer;
 import quarkus.mservices.offer.repository.OfferRepository;
+import quarkus.mservices.offerprice.OfferPriceRequest;
+import quarkus.mservices.offerprice.OfferPriceResponse;
+import quarkus.mservices.offerprice.OfferPriceServiceInterfaceGrpc;
 
 import javax.annotation.security.PermitAll;
 import javax.inject.Inject;
@@ -43,6 +47,9 @@ public class OfferResource {
     @RestClient
     OfferPriceProxy offerPriceProxy;
 
+    @GrpcClient("offerprice")
+    OfferPriceServiceInterfaceGrpc.OfferPriceServiceInterfaceBlockingStub blockingOfferPriceService;
+
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -61,7 +68,7 @@ public class OfferResource {
     @Path("/offers/orig/{origin}/dest/{destination}/date/{travelDate}")
     @NoCache
     @Fallback(fallbackMethod = "getOfferPriceFallBack")
-  //  @Timeout(value = 5000, unit = ChronoUnit.MILLIS)
+    //  @Timeout(value = 5000, unit = ChronoUnit.MILLIS)
 //    @Retry(maxRetries = 5, delay = 100, maxDuration = 5000, jitter = 10)
     @CircuitBreaker(requestVolumeThreshold = 4, failureRatio = 0.75, delay = 1000, successThreshold = 2)
     //@Authenticated
@@ -74,25 +81,37 @@ public class OfferResource {
         List<Offer> offerList = offerRepository.getOffersByOriginAndDestinationAndTravelDate(origin, destination, localDate);
         return offerList
                 .stream()
-                .map(offer -> Pair.create(offerPriceProxy.getOfferPrice(offer.getId()),offer))
-                .map(pair ->  getOfferExtendedDTO(pair.getLeft(), pair.getRight(),localDate))
+//                .map(offer -> Pair.create(offerPriceProxy.getOfferPrice(offer.getId()),offer))
+                .map(offer -> Pair.create(getOfferPriceResponse(offer.getId()), offer))
+                .map(pair -> getOfferExtendedDTO(pair.getLeft(), pair.getRight(), localDate))
                 .toList();
 
     }
 
-//    @GET
+    private OfferPriceResponse getOfferPriceResponse(String offerId) {
+        return blockingOfferPriceService
+                .getOfferPrice(
+                        OfferPriceRequest
+                                .newBuilder()
+                                .setOfferId(offerId)
+                                .build()
+                );
+    }
+
+
+    //    @GET
 //    @Produces(MediaType.APPLICATION_JSON)
     @Path("/offers/orig/{origin}/dest/{destination}/date/{travelDate}")
     public List<OfferExtendedDTO> getOfferPriceFallBack(@PathParam("origin") String origin,
-                                            @PathParam("destination") String destination,
-                                            @PathParam("travelDate") String travelDate) {
+                                                        @PathParam("destination") String destination,
+                                                        @PathParam("travelDate") String travelDate) {
         LocalDate localDate = LocalDate.parse(travelDate, DateTimeFormatter.ISO_LOCAL_DATE);
         logger.info("getOffers with: " + origin + " and " + destination + " and " + localDate);
         List<Offer> offerList = offerRepository.getOffersByOriginAndDestinationAndTravelDate(origin, destination, localDate);
         return offerList
                 .stream()
-                .map(offer -> Pair.create(new OfferPriceDTO("1",offer.getId(), BigDecimal.valueOf(50.0),"EUR" )  ,offer))
-                .map(pair ->  getOfferExtendedDTO(pair.getLeft(), pair.getRight(),localDate))
+                .map(offer -> Pair.create(new OfferPriceDTO("1", offer.getId(), BigDecimal.valueOf(50.0), "EUR"), offer))
+                .map(pair -> getOfferExtendedDTO(pair.getLeft(), pair.getRight(), localDate))
                 .toList();
 
     }
@@ -120,6 +139,19 @@ public class OfferResource {
         offerExtendedDTO.setTravelDate(localDate);
         offerExtendedDTO.setPrice(offerPriceDTO.getPrice());
         offerExtendedDTO.setCurrency(offerPriceDTO.getCurrency());
+        return offerExtendedDTO;
+    }
+
+    private OfferExtendedDTO getOfferExtendedDTO(OfferPriceResponse offerPriceResponse, Offer offer, LocalDate localDate) {
+        OfferExtendedDTO offerExtendedDTO = new OfferExtendedDTO();
+        offerExtendedDTO.setId(offer.getId());
+        offerExtendedDTO.setOrigin(offer.getOrigin());
+        offerExtendedDTO.setDestination(offer.getDestination());
+        offerExtendedDTO.setCabinClass(offer.getCabinClass());
+        offerExtendedDTO.setFlightId(offer.getFlightId());
+        offerExtendedDTO.setTravelDate(localDate);
+        offerExtendedDTO.setPrice(new BigDecimal(offerPriceResponse.getPrice()));
+        offerExtendedDTO.setCurrency(offerPriceResponse.getCurrency());
         return offerExtendedDTO;
     }
 
