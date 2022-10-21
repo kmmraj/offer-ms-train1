@@ -78,7 +78,8 @@ public class OfferResource {
                                             @PathParam("travelDate") String travelDate) {
         LocalDate localDate = LocalDate.parse(travelDate, DateTimeFormatter.ISO_LOCAL_DATE);
         logger.info("getOffers with: " + origin + " and " + destination + " and " + localDate);
-        List<Offer> offerList = offerRepository.getOffersByOriginAndDestinationAndTravelDate(origin, destination, localDate);
+        List<Offer> offerList = offerRepository
+                .getOffersByOriginAndDestinationAndTravelDate(origin, destination, localDate);
         return offerList
                 .stream()
 //                .map(offer -> Pair.create(offerPriceProxy.getOfferPrice(offer.getId()),offer))
