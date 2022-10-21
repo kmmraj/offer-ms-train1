@@ -586,6 +586,16 @@ quarkus.grpc.clients.offerprice.port=9010
     }
 ```
 
+
+- you should change the grpc port to 9010 in the application.properties (rest-offer-price-grpc) as below
+
+```
+quarkus.grpc.server.port=9010
+quarkus.grpc.clients.offerprice.host=localhost
+quarkus.grpc.clients.offerprice.port=9010
+```
+- You should be able to call the offer endpoint and get the offer price details
+
 #### Ex-12: Tracing with Jaeger
 
 #### Ex-13 Load Balancing and Service discovery
