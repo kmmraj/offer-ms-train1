@@ -469,11 +469,58 @@ jaegertracing/all-in-one:latest`
 
 
 #### Ex-11: Introduce gRPC
+- Create a new microservice offer-grpc
+         ```
+          mvn io.quarkus.platform:quarkus-maven-plugin:2.13.2.Final:create \
+            -DprojectGroupId=quarkus.mservices.offerprice \
+            -DprojectArtifactId=rest-offer-price-grpc \
+            -Dextensions='grpc'
+          cd rest-offer-price-grpc
+        ```
+- Add the below to pom.xml
+```
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-reactive</artifactId>
+    </dependency>
+      <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.24</version>
+      <scope>provided</scope>
+    </dependency>
 
+    <!-- Hibernate ORM specific dependencies -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-hibernate-orm</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-hibernate-orm-panache</artifactId>
+    </dependency>
+
+    <!-- JDBC driver dependencies -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jdbc-postgresql</artifactId>
+    </dependency>
+```
+- Create a new proto file offerprice.proto
+- Create a new class OfferPrice that extends PanacheEntity
+- Create a new class OfferPriceRepository that extends PanacheRepositoryBase
+- Create a new class OfferPriceService
+- Create a new class OfferPriceEndpoint
+- The endpoint should return the offer price by id (curl -X GET http://0.0.0.0:8097/api/offer-price/offer/f601f151)
+- 
+
+  
 
 #### Ex-12: Tracing with Jaeger
 
-#### Ex-11 Load Balancing and Service discovery
+#### Ex-13 Load Balancing and Service discovery
 - Use stock quarkus
 - Use Load Balancer
 - Use Ingress

@@ -10,5 +10,6 @@
   <modules>
     <module>rest-offer</module>
     <module>rest-offer-price</module>
+    <module>rest-offer-price-grpc</module>
   </modules>
 </project>
