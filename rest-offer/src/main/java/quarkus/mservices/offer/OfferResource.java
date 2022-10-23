@@ -1,5 +1,6 @@
 package quarkus.mservices.offer;
 
+import io.grpc.Metadata;
 import io.quarkus.grpc.GrpcClient;
 import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
 import org.eclipse.microprofile.faulttolerance.Fallback;
@@ -90,6 +91,16 @@ public class OfferResource {
     }
 
     private OfferPriceResponse getOfferPriceResponse(String offerId) {
+
+//        Metadata extraHeaders = new Metadata();
+//        extraHeaders.put("bearer", "jwtToken"); // create a JWT token and pass it here
+//        return blockingOfferPriceService
+//                .withCallCredentials((method, attrs, appExecutor, applier) -> {
+//                    //applier.apply(extraHeaders);
+//                    return null;
+//                })
+//                .getOfferPrice(OfferPriceRequest.newBuilder().setOfferId(offerId).build());
+
         return blockingOfferPriceService
                 .getOfferPrice(
                         OfferPriceRequest

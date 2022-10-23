@@ -563,7 +563,7 @@ jaegertracing/all-in-one:latest`
 ```
  # Grpc Configurations
 quarkus.grpc.clients.offerprice.host=localhost
-quarkus.grpc.clients.offerprice.port=9010
+quarkus.grpc.clients.offerprice.port=9010 # server port (A)
 ```
 
 - In the OfferResource, inject the grpc client
@@ -590,7 +590,7 @@ quarkus.grpc.clients.offerprice.port=9010
 - you should change the grpc port to 9010 in the application.properties (rest-offer-price-grpc) as below
 
 ```
-quarkus.grpc.server.port=9010
+quarkus.grpc.server.port=9010 # server port (A)
 quarkus.grpc.clients.offerprice.host=localhost
 quarkus.grpc.clients.offerprice.port=9010
 ```
