@@ -29,7 +29,7 @@ spec:
                 configMapKeyRef:
                   name: offer-api-config-map
                   key: OFR_USERNAME
-`          image: postgres:14.1-alpine
+          image: postgres:14.1-alpine
           name: db
           ports:
             - containerPort: 5432

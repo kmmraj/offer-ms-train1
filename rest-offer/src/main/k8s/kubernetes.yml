@@ -66,6 +66,14 @@ spec:
                 configMapKeyRef:
                   name: offer-api-config-map
                   key: OFR_USERNAME
+            - name: MY_POD_NAME
+              valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.name
+            - name: MY_POD_IP
+              valueFrom:
+                  fieldRef:
+                    fieldPath: status.podIP
           image: docker.io/kmmraj/offer:1.1.7
           imagePullPolicy: Always
           name: offer-api
