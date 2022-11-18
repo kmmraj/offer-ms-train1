@@ -4,6 +4,7 @@ import io.grpc.stub.StreamObserver;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
+import org.jboss.logging.Logger;
 import quarkus.mservices.offerprice.repository.OfferPrice;
 import quarkus.mservices.offerprice.repository.OfferPriceRepository;
 import quarkus.mservices.offerprice.OfferPriceRequest;
@@ -18,6 +19,9 @@ public class OfferPriceService implements OfferPriceServiceInterface {
     @Inject
     OfferPriceRepository offerPriceRepository;
 
+    @Inject
+    Logger logger;
+
 //    @Override
 //    public void getOfferPrice(OfferPriceRequest request, StreamObserver<OfferPriceResponse> responseObserver) {
 //        OfferPriceResponse response = OfferPriceResponse.newBuilder()
@@ -30,6 +34,7 @@ public class OfferPriceService implements OfferPriceServiceInterface {
     @Override
     @Blocking
     public Uni<OfferPriceResponse> getOfferPrice(OfferPriceRequest request) {
+        logger.info("getOfferPrice Service call with: " + request.getOfferId());
         OfferPrice offerPrice =  offerPriceRepository.getOffersPriceByOfferId(request.getOfferId());
         return Uni.createFrom().item(OfferPriceResponse.newBuilder()
                 .setPrice(offerPrice.getPrice().toString())

@@ -1,0 +1,18 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: offer-api-virtual-services
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - http-gateway                      # 1
+  http:
+    - match:
+        - uri:
+            prefix: /api/offers
+      route:
+        - destination:
+            host: offer-api             # 2
+#            port:
+#              number: 8080

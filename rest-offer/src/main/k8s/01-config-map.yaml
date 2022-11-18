@@ -9,3 +9,4 @@ kind: ConfigMap
 metadata:
   name: offer-api-config-map
   namespace: default
+#  namespace: istio-system

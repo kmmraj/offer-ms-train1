@@ -84,7 +84,8 @@ public class OfferResource {
         return offerList
                 .stream()
 //                .map(offer -> Pair.create(offerPriceProxy.getOfferPrice(offer.getId()),offer))
-                .map(offer -> Pair.create(getOfferPriceResponse(offer.getId()), offer))
+//                .map(offer -> Pair.create(getOfferPriceResponse(offer.getId()), offer))
+                .map(offer -> Pair.create(getOfferPriceResponseFallBack(offer.getId()), offer))
                 .map(pair -> getOfferExtendedDTO(pair.getLeft(), pair.getRight(), localDate))
                 .toList();
 
@@ -108,6 +109,26 @@ public class OfferResource {
                                 .setOfferId(offerId)
                                 .build()
                 );
+    }
+
+    private OfferPriceResponse getOfferPriceResponseFallBack(String offerId) {
+
+//        Metadata extraHeaders = new Metadata();
+//        extraHeaders.put("bearer", "jwtToken"); // create a JWT token and pass it here
+//        return blockingOfferPriceService
+//                .withCallCredentials((method, attrs, appExecutor, applier) -> {
+//                    //applier.apply(extraHeaders);
+//                    return null;
+//                })
+//                .getOfferPrice(OfferPriceRequest.newBuilder().setOfferId(offerId).build());
+
+        return OfferPriceResponse
+                .newBuilder()
+                .setPrice("100")
+                .setOfferId(offerId)
+                .setCurrency("EUR")
+                .setId("1")
+                .build();
     }
 
 

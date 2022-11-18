@@ -324,32 +324,33 @@ jaegertracing/all-in-one:latest`
   mvn clean package -Dquarkus.kubernetes.deploy=true
   ```
 
--- kubectl exec -it db-5b656447db-7fmpx -- /bin/bash
+  - Warm up the DB
+  
 
-        kubectl exec -it db-5b656447db-7fmpx -- /bin/bash
-        bash-5.1# psql -U postgres
-        psql (14.1)
-        Type "help" for help.
+          kubectl exec -it db-5b656447db-7fmpx -- /bin/bash
+          bash-5.1# psql -U postgres
+          psql (14.1)
+          Type "help" for help.
         
-        postgres=# create database offerdb;
-        CREATE DATABASE
-        postgres=# create user offeruser with encrypted password 'offeruser';
-        CREATE ROLE
-        postgres=# grant all privileges on database offerdb to offeruser;
-        GRANT
+          postgres=# create database offerdb;
+          CREATE DATABASE
+          postgres=# create user offeruser with encrypted password 'offeruser';
+          CREATE ROLE
+          postgres=# grant all privileges on database offerdb to offeruser;
+          GRANT
 
-        postgres-# \c offerdb
-        You are now connected to database "offerdb" as user "postgres".
+          postgres-# \c offerdb
+          You are now connected to database "offerdb" as user "postgres".
 
-        offerdb=# SELECT * FROM PUBLIC.OFFER;
-        id    | cabinclass |    departuredate    | destination | flightid | origin
-        ----------+------------+---------------------+-------------+----------+--------
-        f602f151 |          0 | 2023-10-24 09:42:00 | MAD         | 500ba    | BCN
-        f603f152 |          0 | 2023-10-24 11:42:00 | MAD         | 501ba    | BCN
-        f604f153 |          0 | 2023-10-24 13:42:00 | MAD         | 502ba    | BCN
-        (3 rows)
+          offerdb=# SELECT * FROM PUBLIC.OFFER;
+          id    | cabinclass |    departuredate    | destination | flightid | origin
+          ----------+------------+---------------------+-------------+----------+--------
+          f602f151 |          0 | 2023-10-24 09:42:00 | MAD         | 500ba    | BCN
+          f603f152 |          0 | 2023-10-24 11:42:00 | MAD         | 501ba    | BCN
+          f604f153 |          0 | 2023-10-24 13:42:00 | MAD         | 502ba    | BCN
+          (3 rows)
 
-        postgres=# \q
+          postgres=# \q
 
 - With docker image
 - With docker compose
@@ -596,30 +597,120 @@ quarkus.grpc.clients.offerprice.port=9010
 ```
 - You should be able to call the offer endpoint and get the offer price details
 
-#### Ex-12: Tracing with Jaeger
+
 
 #### Ex-13 Load Balancing and Service discovery
 
-- Use stock quarkus
-- Use Load Balancer
-- Use Ingress
+- Install Istio
+
+    ```
+    curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.16.0 TARGET_ARCH=x86_64 sh -
+    cd istio-1.16.0/
+    export PATH=$PWD/bin:$PATH
+    echo $PATH
+    istioctl install --set profile=demo -y
+    ```
+  
+- Verify the installation
+
+    ```
+    kubectl get pods -n istio-system
+    ```
+- Enable Istio
+
+  ```
+  kubectl label namespace istio-system istio-injection=enabled
+  ```
+
 - Use Istio
     - Use Istio Ingress Gateway
+      - src/main/k8s/05-create-http-gateway.yaml
     - Use Istio Virtual Service
-    -
+      - src/main/k8s/06-create-virtual-service.yaml
 
-#### Ex-12: Helm and Pulumi
+  - Deploy the offer-api application in cloud
+    - src/main/k8s/01-config-map.yaml
+    - src/main/k8s/02-secret.yaml
+    - src/main/k8s/03A-pg-database-dv-pvc.yaml
+    - src/main/k8s/03B-db-deployment.yaml
+    - src/main/k8s/04-kubernetes.yaml
+    - src/main/k8s/05-create-http-gateway.yaml
+    - src/main/k8s/06-create-virtual-service.yaml
+     
+    ```
+       kubectl apply -f 01-config-map.yaml
+       kubectl apply -f 02-secret.yaml
+       kubectl apply -f 03A-pg-database-dv-pvc.yaml
+       kubectl apply -f 03B-db-deployment.yaml 
+    ```
+  - Warm up the DB
 
-#### Ex-13: Monitoring with Prometheus and Grafana
+     ```
+          kubectl exec -it db-5b656447db-7fmpx -- /bin/bash
+          bash-5.1# psql -U postgres
+          psql (14.1)
+          Type "help" for help.
+        
+          postgres=# create database offerdb;
+          CREATE DATABASE
+          postgres=# create user offeruser with encrypted password 'offeruser';
+          CREATE ROLE
+          postgres=# grant all privileges on database offerdb to offeruser;
+          GRANT
 
-#### Ex-14: Logging with ELK
+          postgres-# \c offerdb
+          You are now connected to database "offerdb" as user "postgres".
 
-#### Ex-15: API Gateway with Kong
+          offerdb=# SELECT * FROM PUBLIC.OFFER;
+          id    | cabinclass |    departuredate    | destination | flightid | origin
+          ----------+------------+---------------------+-------------+----------+--------
+          f602f151 |          0 | 2023-10-24 09:42:00 | MAD         | 500ba    | BCN
+          f603f152 |          0 | 2023-10-24 11:42:00 | MAD         | 501ba    | BCN
+          f604f153 |          0 | 2023-10-24 13:42:00 | MAD         | 502ba    | BCN
+          (3 rows)
 
-#### Ex-16: API Gateway with Istio
+          postgres=# \q
+     ```
+  
+  - Verify the Istio Configurations
+   ```
+      istioctl analyze -n=istio-system
+      
+    ```
+ 
+    - Deploy the offer-price-api application in cloud
+     
+     ```
+     kubectl apply -f 04-kubernetes.yml
+     ```
+  -  Enable the istio gateway and virtual service
+     ```
+     kubectl apply -f 05-create-http-gateway.yaml
+     kubectl apply -f 06-create-virtual-service.yaml
+     ```
 
-#### Ex-17: Continuous Delivery with ArgoCD
+  - Access the application using the Istio Ingress Gateway
 
-#### Ex-18: Deploy the native image (jib)
+   ```
+   curl -X GET http://<istio-ingress-gateway-ip>/api/offers/orig/BCN/dest/MAD/date/2023-05-05
+   curl -X GET http://34.135.182.242/api/offers/orig/BCN/dest/MAD/date/2023-05-05
+   ```
 
-#### Ex-19: Deploy the s2i image (openshift)
+#### Ex-14: Tracing with Jaeger
+
+
+#### Ex-15: Monitoring with Prometheus and Grafana
+
+#### Ex-16: Logging with ELK
+
+#### Ex-17: API Gateway with Kong
+
+#### Ex-18: API Gateway with Istio
+
+#### Ex-19: Continuous Delivery with ArgoCD
+
+#### Ex-20: Deploy the native image (jib)
+
+#### Ex-21: Deploy the s2i image (openshift)
+
+#### Ex-22: Helm and Pulumi
