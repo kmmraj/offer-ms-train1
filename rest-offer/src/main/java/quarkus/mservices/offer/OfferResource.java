@@ -84,8 +84,8 @@ public class OfferResource {
         return offerList
                 .stream()
 //                .map(offer -> Pair.create(offerPriceProxy.getOfferPrice(offer.getId()),offer))
-//                .map(offer -> Pair.create(getOfferPriceResponse(offer.getId()), offer))
-                .map(offer -> Pair.create(getOfferPriceResponseFallBack(offer.getId()), offer))
+                .map(offer -> Pair.create(getOfferPriceResponse(offer.getId()), offer))
+//                .map(offer -> Pair.create(getOfferPriceResponseFallBack(offer.getId()), offer))
                 .map(pair -> getOfferExtendedDTO(pair.getLeft(), pair.getRight(), localDate))
                 .toList();
 

@@ -74,8 +74,8 @@ spec:
               valueFrom:
                   fieldRef:
                     fieldPath: status.podIP
-          image: docker.io/kmmraj/offer-api:1.1.8
-          imagePullPolicy: IfNotPresent
+          image: docker.io/kmmraj/offer-api:1.1.10
+          imagePullPolicy: Always
           name: offer-api
           ports:
             - containerPort: 8080
