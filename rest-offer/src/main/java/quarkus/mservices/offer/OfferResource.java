@@ -68,10 +68,10 @@ public class OfferResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/offers/orig/{origin}/dest/{destination}/date/{travelDate}")
     @NoCache
-    @Fallback(fallbackMethod = "getOfferPriceFallBack")
+//    @Fallback(fallbackMethod = "getOfferPriceFallBack")
     //  @Timeout(value = 5000, unit = ChronoUnit.MILLIS)
 //    @Retry(maxRetries = 5, delay = 100, maxDuration = 5000, jitter = 10)
-    @CircuitBreaker(requestVolumeThreshold = 4, failureRatio = 0.75, delay = 1000, successThreshold = 2)
+//    @CircuitBreaker(requestVolumeThreshold = 4, failureRatio = 0.75, delay = 1000, successThreshold = 2)
     //@Authenticated
     @PermitAll
     public List<OfferExtendedDTO> getOffers(@PathParam("origin") String origin,
@@ -139,7 +139,7 @@ public class OfferResource {
                                                         @PathParam("destination") String destination,
                                                         @PathParam("travelDate") String travelDate) {
         LocalDate localDate = LocalDate.parse(travelDate, DateTimeFormatter.ISO_LOCAL_DATE);
-        logger.info("getOffers with: " + origin + " and " + destination + " and " + localDate);
+        logger.info("Fallback: getOffers with: " + origin + " and " + destination + " and " + localDate);
         List<Offer> offerList = offerRepository.getOffersByOriginAndDestinationAndTravelDate(origin, destination, localDate);
         return offerList
                 .stream()
@@ -185,7 +185,15 @@ public class OfferResource {
         offerExtendedDTO.setTravelDate(localDate);
         offerExtendedDTO.setPrice(new BigDecimal(offerPriceResponse.getPrice()));
         offerExtendedDTO.setCurrency(offerPriceResponse.getCurrency());
-        offerExtendedDTO.setTax(new BigDecimal(offerPriceResponse.getTax()));
+
+        BigDecimal tax;
+        try {
+            tax = new BigDecimal(offerPriceResponse.getTax());
+        } catch (NumberFormatException nfe) {
+            tax = BigDecimal.ZERO;
+        }
+        offerExtendedDTO.setTax(tax);
+
         return offerExtendedDTO;
     }
 

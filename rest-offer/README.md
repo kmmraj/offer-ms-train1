@@ -622,11 +622,17 @@ quarkus.grpc.clients.offerprice.port=9010
   kubectl label namespace istio-system istio-injection=enabled
   ```
 
-- Use Istio
-    - Use Istio Ingress Gateway
-      - src/main/k8s/05-create-http-gateway.yaml
-    - Use Istio Virtual Service
-      - src/main/k8s/06-create-virtual-service.yaml
+- Note : In macOS machine, apply the below in the terminal where the mvn command is executed
+
+    ```
+    export DOCKER_DEFAULT_PLATFORM=linux/amd64 
+    ```
+- Build the docker images
+
+    ```
+   ./mvnw clean install -Dquarkus.container-image.builder=docker
+    ```
+- Deploy the docker images
 
   - Deploy the offer-api application in cloud
     - src/main/k8s/01-config-map.yaml
@@ -698,7 +704,13 @@ quarkus.grpc.clients.offerprice.port=9010
 
 #### Ex-14: More on Istio Load Balancing and Service discovery
 
-- Update the offer price app to serve the tax
+- Note : In macOS machine, apply the below in the terminal where the mvn command is executed
+
+    ```
+    export DOCKER_DEFAULT_PLATFORM=linux/amd64 
+    ```
+
+- Update the offer price app to serve the tax (This is the V2 change - New Feature :-)
 - Update proto file
 - Update related classes
   ```
@@ -710,22 +722,95 @@ quarkus.grpc.clients.offerprice.port=9010
   rest-offer/src/main/java/quarkus/mservices/offer/OfferResource.java
   rest-offer/src/main/proto/offerprice.proto
   ```
+- Build the offer-price-api application
+  ```
+   ./mvnw -Dmaven.wagon.http.ssl.insecure=true -Dmaven.wagon.http.ssl.allowall=true clean install -Dquarkus.container-image.builder=docker
+  ```
+- Update the DB, create the new column tax
+    ```
+    kubectl exec -it db-5b656447db-7fmpx -- /bin/bash
+    bash-5.1# psql -U postgres
+    psql (14.1)
+    Type "help" for help.
+    
+    postgres=# \c offerdb
+    You are now connected to database "offerdb" as user "postgres".
+    
+    offerdb=# ALTER TABLE offerprice ADD COLUMN tax numeric(10,2);
+    ALTER TABLE
+   offerdb=# SELECT * FROM PUBLIC.OFFERPRICE;
+    id    | currency | offerid  | price  |  tax
+   ----------+----------+----------+--------+-------
+    g601f151 | EUR      | f601f151 |  70.00 |  
+    g602f152 | EUR      | f602f152 | 100.00 | 
+    g603f153 | EUR      | f603f153 | 120.00 | 
+    g604f154 | EUR      | f604f154 | 150.00 | 
+    
+    (4 rows)
+  
+    UPDATE offerprice SET tax = 7.00 WHERE id = 'g601f151';
+    UPDATE offerprice SET tax = 10.00 WHERE id = 'g602f152';
+    UPDATE offerprice SET tax = 12.00 WHERE id = 'g603f153';
+    UPDATE offerprice SET tax = 15.00 WHERE id = 'g604f154';
+    commit;
+  
+    offerdb=# SELECT * FROM PUBLIC.OFFERPRICE;
+    id    | currency | offerid  | price  |  tax
+    ----------+----------+----------+--------+-------
+    g601f151 | EUR      | f601f151 |  70.00 |  7.00
+    g602f152 | EUR      | f602f152 | 100.00 | 10.00
+    g603f153 | EUR      | f603f153 | 120.00 | 12.00
+    g604f154 | EUR      | f604f154 | 150.00 | 15.00
+    (4 rows)
 
-- Update the kubernetes files to serve the V2 of the offer price app (TODO)
+    
+    offerdb=# \q
+    ```
+
+- Update the kubernetes files to serve the V2 of the offer price app 
   ```
   rest-offer-price-grpc/src/main/k8s/04-kubernetes.yaml
   rest-offer/src/main/k8s/04-kubernetes.yaml
   ```
-- Create DestinationRule with subsets, weight and traffic policy (TODO)
+- Create virtual service with subsets, weight and traffic policy 
+   to route the traffic to the V2 of the offer price app
+    ```
+   rest-offer-price-grpc/src/main/k8s/02-virtual-service.yaml
+   ```
   
-  ```
-  rest-offer-price-grpc/src/main/k8s/07-create-destination-rule.yaml
-  ```
+- Create the destination rule to define the subsets
+    ```
+   rest-offer-price-grpc/src/main/k8s/03-destination-rule.yaml
+   ```
 - Access the application using the Istio Ingress Gateway
 
    ```
    curl -X GET http://<istio-ingress-gateway-ip>/api/offers/orig/BCN/dest/MAD/date/2023-05-05
    curl -X GET http://
+  ```
+  - Change the weight of the V2 to 80% and access the application using the Istio Ingress Gateway
+    ```
+    rest-offer-price-grpc/src/main/k8s/04-virtual-service.yaml
+    
+      - destination:
+          host: offer-price-api
+          subset: v1
+        weight: 20
+      - destination:
+            host: offer-price-api
+            subset: v2
+        weight: 80
+    ```
+   - Apply the changes
+    ```
+    kubeclt apply -f rest-offer-price-grpc/src/main/k8s/04-virtual-service.yaml
+    ```
+   - Access the application using the Istio Ingress Gateway
+  
+     ```
+     curl -X GET http://<istio-ingress-gateway-ip>/api/offers/orig/BCN/dest/MAD/date/2023-05-05
+     curl -X GET http://
+     ```
 #### Ex-15: Tracing with Jaeger
 
 

@@ -1,0 +1,18 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: offer-price-api-virtual-services
+spec:
+  hosts:
+    - offer-price-api
+  http:
+    - route:
+      - destination:
+          host: offer-price-api
+          subset: v1
+        weight: 20
+      - destination:
+            host: offer-price-api
+            subset: v2
+        weight: 80
