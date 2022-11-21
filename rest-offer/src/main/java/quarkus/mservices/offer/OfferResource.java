@@ -185,6 +185,7 @@ public class OfferResource {
         offerExtendedDTO.setTravelDate(localDate);
         offerExtendedDTO.setPrice(new BigDecimal(offerPriceResponse.getPrice()));
         offerExtendedDTO.setCurrency(offerPriceResponse.getCurrency());
+        offerExtendedDTO.setTax(new BigDecimal(offerPriceResponse.getTax()));
         return offerExtendedDTO;
     }
 

@@ -25,4 +25,5 @@ public class OfferExtendedDTO {
     private String flightId;
     private BigDecimal price;
     private String currency;
+    private BigDecimal tax;
 }

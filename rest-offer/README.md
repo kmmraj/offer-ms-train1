@@ -696,21 +696,51 @@ quarkus.grpc.clients.offerprice.port=9010
    curl -X GET http://34.135.182.242/api/offers/orig/BCN/dest/MAD/date/2023-05-05
    ```
 
-#### Ex-14: Tracing with Jaeger
+#### Ex-14: More on Istio Load Balancing and Service discovery
+
+- Update the offer price app to serve the tax
+- Update proto file
+- Update related classes
+  ```
+  rest-offer-price-grpc/src/main/java/quarkus/mservices/offerprice/OfferPriceService.java
+  rest-offer-price-grpc/src/main/java/quarkus/mservices/offerprice/repository/OfferPrice.java
+  rest-offer-price-grpc/src/main/proto/offerprice.proto
+  rest-offer-price-grpc/src/main/resources/insert_offer_price.sql
+  rest-offer/src/main/java/quarkus/mservices/offer/OfferExtendedDTO.java
+  rest-offer/src/main/java/quarkus/mservices/offer/OfferResource.java
+  rest-offer/src/main/proto/offerprice.proto
+  ```
+
+- Update the kubernetes files to serve the V2 of the offer price app (TODO)
+  ```
+  rest-offer-price-grpc/src/main/k8s/04-kubernetes.yaml
+  rest-offer/src/main/k8s/04-kubernetes.yaml
+  ```
+- Create DestinationRule with subsets, weight and traffic policy (TODO)
+  
+  ```
+  rest-offer-price-grpc/src/main/k8s/07-create-destination-rule.yaml
+  ```
+- Access the application using the Istio Ingress Gateway
+
+   ```
+   curl -X GET http://<istio-ingress-gateway-ip>/api/offers/orig/BCN/dest/MAD/date/2023-05-05
+   curl -X GET http://
+#### Ex-15: Tracing with Jaeger
 
 
-#### Ex-15: Monitoring with Prometheus and Grafana
+#### Ex-16: Monitoring with Prometheus and Grafana
 
-#### Ex-16: Logging with ELK
+#### Ex-17: Logging with ELK
 
-#### Ex-17: API Gateway with Kong
+#### Ex-18: API Gateway with Kong
 
-#### Ex-18: API Gateway with Istio
+#### Ex-19: API Gateway with Istio
 
-#### Ex-19: Continuous Delivery with ArgoCD
+#### Ex-20: Continuous Delivery with ArgoCD
 
-#### Ex-20: Deploy the native image (jib)
+#### Ex-21: Deploy the native image (jib)
 
-#### Ex-21: Deploy the s2i image (openshift)
+#### Ex-22: Deploy the s2i image (openshift)
 
-#### Ex-22: Helm and Pulumi
+#### Ex-23: Helm and Pulumi

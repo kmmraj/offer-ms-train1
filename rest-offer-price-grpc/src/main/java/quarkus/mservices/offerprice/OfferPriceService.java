@@ -40,14 +40,8 @@ public class OfferPriceService implements OfferPriceServiceInterface {
                 .setPrice(offerPrice.getPrice().toString())
                 .setOfferId(request.getOfferId())
                 .setCurrency(offerPrice.getCurrency())
+                .setTax(offerPrice.getTax().toString())
                 .setId(offerPrice.getId())
                 .build());
-
-//        return Uni.createFrom().item(OfferPriceResponse.newBuilder()
-//                .setPrice("100")
-//                .setOfferId(request.getOfferId())
-//                .setCurrency("EUR")
-//                .setId("1")
-//                .build());
     }
 }

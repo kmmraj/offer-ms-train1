@@ -20,6 +20,7 @@ message OfferPriceResponse {
   string offer_id = 2;
   string price = 3;
   string currency = 4;
+  string tax = 5;
 }
 
 message BInteger {
