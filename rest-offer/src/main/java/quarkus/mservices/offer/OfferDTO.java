@@ -4,7 +4,6 @@ import lombok.*;
 
 import javax.json.bind.annotation.JsonbProperty;
 import javax.persistence.Id;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @AllArgsConstructor

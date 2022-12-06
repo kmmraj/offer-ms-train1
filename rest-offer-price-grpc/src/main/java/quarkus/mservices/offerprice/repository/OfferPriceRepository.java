@@ -9,7 +9,6 @@ import javax.enterprise.context.ApplicationScoped;
 public class OfferPriceRepository implements PanacheRepositoryBase<OfferPrice, String> {
 
     public OfferPrice getOffersPriceByOfferId(String offerId) {
-        //return list("offerid = ?1", offerId);
         return find("offerid", offerId).firstResult();
     }
 

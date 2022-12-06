@@ -1,15 +1,11 @@
 package quarkus.mservices.offerprice;
 
-import io.grpc.stub.StreamObserver;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
 import org.jboss.logging.Logger;
 import quarkus.mservices.offerprice.repository.OfferPrice;
 import quarkus.mservices.offerprice.repository.OfferPriceRepository;
-import quarkus.mservices.offerprice.OfferPriceRequest;
-import quarkus.mservices.offerprice.OfferPriceResponse;
-import quarkus.mservices.offerprice.OfferPriceServiceInterface;
 
 import javax.inject.Inject;
 
