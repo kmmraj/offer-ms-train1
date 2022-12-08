@@ -835,7 +835,25 @@ quarkus.grpc.clients.offerprice.port=9010
 
 
 #### Ex-16: Monitoring with Prometheus and Grafana
-
+- Install Prometheus and Grafana
+    ```
+      kmmraj@cloudshell:~$ cd istio-1.16.0/
+      kmmraj@cloudshell:~/istio-1.16.0$ kubectl apply -f samples/addons
+     ```
+- Access the Grafana Dashboard UI
+     ```
+      istioctl dashboard grafana
+  ```
+- Access the Prometheus Dashboard UI
+  ```
+  istioctl dashboard prometheus
+  ```
+- You can also install the Prometheus and Grafana components in the Istio namespace individually like below
+  
+  ```
+    kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.16/samples/addons/prometheus.yaml
+    kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.16/samples/addons/grafana.yaml
+    ```
 
 #### Ex-17: Logging with ELK
 
