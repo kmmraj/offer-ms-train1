@@ -11,8 +11,8 @@ spec:
       - destination:
           host: offer-price-api
           subset: v1
-        weight: 20
+        weight: 50
       - destination:
             host: offer-price-api
             subset: v2
-        weight: 80
+        weight: 50

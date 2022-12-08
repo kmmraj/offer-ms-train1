@@ -811,10 +811,31 @@ quarkus.grpc.clients.offerprice.port=9010
      curl -X GET http://<istio-ingress-gateway-ip>/api/offers/orig/BCN/dest/MAD/date/2023-05-05
      curl -X GET http://
      ```
-#### Ex-15: Tracing with Jaeger
+#### Ex-15: Tracing with Jaeger and Kiali
+
+- Install Jaeger and Kiali
+    ```
+      kmmraj@cloudshell:~$ cd istio-1.16.0/
+      kmmraj@cloudshell:~/istio-1.16.0$ kubectl apply -f samples/addons
+     ```
+- Access the Kiali Dashboard UI
+     ```
+      istioctl dashboard kiali
+      ```
+  - Access the Jaeger Dashboard UI
+     ```
+      istioctl dashboard jaeger
+     ```
+  
+- You can also install the Kiali and Jaeger components in the Istio namespace individually like below
+  ```
+  kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.16/samples/addons/jaeger.yaml
+  kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.16/samples/addons/kiali.yaml
+  ```
 
 
 #### Ex-16: Monitoring with Prometheus and Grafana
+
 
 #### Ex-17: Logging with ELK
 
