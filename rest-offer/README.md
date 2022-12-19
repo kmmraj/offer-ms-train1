@@ -339,7 +339,7 @@ jaegertracing/all-in-one:latest`
           postgres=# grant all privileges on database offerdb to offeruser;
           GRANT
 
-          postgres-# \c offerdb
+          postgres-# \c offerdb;
           You are now connected to database "offerdb" as user "postgres".
 
           offerdb=# SELECT * FROM PUBLIC.OFFER;
@@ -664,7 +664,7 @@ quarkus.grpc.clients.offerprice.port=9010
           postgres=# grant all privileges on database offerdb to offeruser;
           GRANT
 
-          postgres-# \c offerdb
+          postgres-# \c offerdb;
           You are now connected to database "offerdb" as user "postgres".
 
           offerdb=# SELECT * FROM PUBLIC.OFFER;
@@ -729,7 +729,7 @@ quarkus.grpc.clients.offerprice.port=9010
 - Update the DB, create the new column tax
     ```
     kubectl exec -it db-5b656447db-7fmpx -- /bin/bash
-    bash-5.1# psql -U postgres
+    bash-5.1# psql -U postgres -d offerdb
     psql (14.1)
     Type "help" for help.
     
@@ -784,14 +784,14 @@ quarkus.grpc.clients.offerprice.port=9010
    ```
 - Access the application using the Istio Ingress Gateway
 
-   ```
+   ```shell
    curl -X GET http://<istio-ingress-gateway-ip>/api/offers/orig/BCN/dest/MAD/date/2023-05-05
-   curl -X GET http://
   ```
   - Change the weight of the V2 to 80% and access the application using the Istio Ingress Gateway
     ```
     rest-offer-price-grpc/src/main/k8s/04-virtual-service.yaml
-    
+    ```
+    ```yaml
       - destination:
           host: offer-price-api
           subset: v1
@@ -814,21 +814,21 @@ quarkus.grpc.clients.offerprice.port=9010
 #### Ex-15: Tracing with Jaeger and Kiali
 
 - Install Jaeger and Kiali
-    ```
+    ```shell
       kmmraj@cloudshell:~$ cd istio-1.16.0/
       kmmraj@cloudshell:~/istio-1.16.0$ kubectl apply -f samples/addons
-     ```
+   ```
 - Access the Kiali Dashboard UI
-     ```
+     ```shell
       istioctl dashboard kiali
-      ```
+    ```
   - Access the Jaeger Dashboard UI
-     ```
+     ```shell
       istioctl dashboard jaeger
      ```
   
 - You can also install the Kiali and Jaeger components in the Istio namespace individually like below
-  ```
+  ```shell
   kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.16/samples/addons/jaeger.yaml
   kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.16/samples/addons/kiali.yaml
   ```
@@ -850,12 +850,79 @@ quarkus.grpc.clients.offerprice.port=9010
   ```
 - You can also install the Prometheus and Grafana components in the Istio namespace individually like below
   
-  ```
+  ```shell
     kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.16/samples/addons/prometheus.yaml
     kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.16/samples/addons/grafana.yaml
     ```
 
 #### Ex-17: Logging with ELK
+
+ -  Run the application from local dev machine and see the logs in Kibana 
+
+ - #### Deploy the ELK stack in the docker desktop 
+   - ELK stack docker compose file is available in the repo docker-elk-custom/docker-compose.yml
+      
+     ```shell
+        docker-compose -f docker-compose.yml -f extensions/filebeat/filebeat-compose.yml up -d
+      ```
+      - Access the Kibana Dashboard UI (username: elastic, password: changeme)
+        ```url
+          http://localhost:5601
+        ```
+      - Note: If you need to shut down ELK stack
+          
+         ```shell
+          docker-compose down -v
+          ```
+   
+ - #### configuration changes - rest-offer-price-grpc 
+   
+   - 
+      - in rest-offer-price-grpc/src/main/resources/application.properties
+        ```properties
+        quarkus.log.handler.gelf.enabled=true
+        quarkus.log.handler.gelf.host=localhost
+        quarkus.log.handler.gelf.port=50000
+        ```
+    - Add the following dependency in rest-offer-price-grpc/pom.xml
+      ```xml
+      <dependency>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-gelf</artifactId>
+      </dependency>
+      ```
+    - Run the application from local dev machine
+      ```shell
+      quarkus dev -Ddebug=5009
+      ```
+        
+ - #### Configuration changes (rest-offer)
+   - in rest-offer/src/main/resources/application.properties add the below
+   
+    ```properties 
+        quarkus.log.handler.gelf.enabled=true
+        quarkus.log.handler.gelf.host=localhost
+        quarkus.log.handler.gelf.port=50000
+    ```
+ 
+- Add dependencies in pom.xml
+  ```xml
+    <dependency>
+        <groupId>io.quarkus</groupId>
+        <artifactId>quarkus-logging-gelf</artifactId>
+    </dependency>
+  ```
+- Run the application as below
+
+  ```shell
+   quarkus dev -Dquarkus.container-image.builder=docker  -Ddebug=5007
+  ```
+  
+- #### Access the Kibana Dashboard UI (username: elastic, password: changeme)
+  ```url
+    http://localhost:5601
+  ```
+  - Navigate to the Discover tab, you can see the logs from the application
 
 #### Ex-18: API Gateway with Kong
 
