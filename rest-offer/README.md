@@ -854,6 +854,16 @@ quarkus.grpc.clients.offerprice.port=9010
     kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.16/samples/addons/prometheus.yaml
     kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.16/samples/addons/grafana.yaml
     ```
+  
+- Shutdown the istio services
+    ```shell
+    kmmraj@cloudshell:~/istio-1.16.0 (smart-impact-363004)$ kubectl delete -f samples/addons
+    ```
+   ```shell
+  kubectl label namespace istio-system istio-injection-
+  kmmraj@cloudshell:~ (smart-impact-363004)$ istioctl x uninstall --purge
+  ```
+  
 
 #### Ex-17: Logging with ELK
 
