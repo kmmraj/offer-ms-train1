@@ -924,7 +924,112 @@ quarkus.grpc.clients.offerprice.port=9010
   ```
   - Navigate to the Discover tab, you can see the logs from the application
 
-#### Ex-18: API Gateway with Kong
+#### Ex-18: Apache Kafka using MicroProfile Reactive Messaging
+
+## Goal
+- To demonstrate the use of MicroProfile Reactive Messaging to send and receive messages from Apache Kafka
+
+## Steps
+- Create a new project using the following command
+  ```shell
+    mvn io.quarkus.platform:quarkus-maven-plugin:2.15.1.Final:create \
+    -DprojectGroupId=quarkus.mservices.offerdiscounts \
+    -DprojectArtifactId=discount-coupons-producers-kafka \
+    -Dextensions='resteasy-reactive-jackson,smallrye-reactive-messaging-kafka' \
+    -DnoCode
+  ```
+- Add the following dependencies in discount-coupons-producers-kafka/pom.xml
+  ```xml
+  <dependency>
+     <groupId>io.quarkus</groupId>
+     <artifactId>quarkus-rest-client-reactive-deployment</artifactId>
+  </dependency>
+  <dependency>
+     <groupId>org.awaitility</groupId>
+     <artifactId>awaitility</artifactId>
+     <version>4.2.0</version>
+  </dependency>
+  ```
+  
+- Create another project using the following command
+  ```shell
+    quarkus create app quarkus.mservices.offerdiscounts:discount-coupons-processor-kafka \
+    --extension='smallrye-reactive-messaging-kafka' \
+    -DnoCode
+  ```
+  
+- Note the above projects are added as modules in the parent pom.xml, if not add t
+  ```xml
+  <modules>
+   ...
+    <module>discount-coupons-producers-kafka</module>
+    <module>discount-coupons-processor-kafka</module>
+  </modules>
+  ```
+#### In the module discount-coupons-producers-kafka
+- Create the discount request and discount bean
+- Create the DiscountCoupon and DiscountCouponDeserializer classes
+- Create the DiscountCouponProducer and DiscountCouponProducerInterface classes
+
+
+- Run the application as below
+
+  
+  ```bash
+   mvn -f discount-coupons-producers-kafka quarkus:dev -Ddebug=5002 -Dquarkus.http.port=8091
+  ```
+
+#### In the module discount-coupons-processor-kafka
+- Create the DiscountCouponProcessor class
+- Copy the DiscountCoupon and DiscountCouponSerializer classes from the discount-coupons-producers-kafka module
+- Update the application.properties file with the below properties
+- Update the application.properties file
+  ```properties
+   %dev.quarkus.http.port=8081
+
+    # Go bad to the first records, if it's out first access
+    kafka.auto.offset.reset=earliest
+    
+    # Set the Kafka topic, as it's not the channel name
+    mp.messaging.incoming.disco-requests.topic = disco-requests
+    
+    # Configure the outgoing `discocopons` Kafka topic
+    mp.messaging.outgoing.discocoupons.value.serializer=io.quarkus.kafka.client.serialization.ObjectMapperSerializer
+  ```
+- Run the application as below
+
+  
+  ```bash
+   mvn -f discount-coupons-processor-kafka quarkus:dev -Ddebug=5004
+  ```
+
+- Test the application using the following command
+  ```shell
+     curl -X POST  http://localhost:8093/discounts/request
+ ```
+
+#### Deploy the app in kubernetes
+- Create the docker images for the modules
+  ```shell
+  mvn -f discount-coupons-producers-kafka clean package -Dquarkus.container-image.push=true
+  mvn -f discount-coupons-processor-kafka clean package -Dquarkus.container-image.push=true
+  ```
+- Create the kubernetes resources
+  ```shell
+  mvn -f discount-coupons-producers-kafka clean package -Dquarkus.kubernetes.deploy=true
+  mvn -f discount-coupons-processor-kafka clean package -Dquarkus.kubernetes.deploy=true
+  ```
+- Create the docker compose file and convert it to kubernetes resources
+- Deploy it in kubernetes
+  ```shell
+  kubectl apply -f 01-zookeeper.yaml
+  kubectl apply -f 02-kafka.yaml
+  kubectl apply -f 03-applications.yaml
+  ```
+- Access the application
+  ```url
+  http://localhost:8081/discount-coupons
+  ```
 
 #### Ex-19: API Gateway with Istio
 

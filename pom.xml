@@ -11,5 +11,7 @@
     <module>rest-offer</module>
     <module>rest-offer-price</module>
     <module>rest-offer-price-grpc</module>
+    <module>discount-coupons-producers-kafka</module>
+    <module>discount-coupons-processor-kafka</module>
   </modules>
 </project>
