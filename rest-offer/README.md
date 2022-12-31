@@ -1030,7 +1030,7 @@ quarkus.grpc.clients.offerprice.port=9010
   ```url
   http://localhost:8081/discount-coupons
   ```
-
+TBD - https://strimzi.io/quickstarts/ (Kafka on kubernetes)
 #### Ex-19: API Gateway with Istio
 
 #### Ex-20: Continuous Delivery with ArgoCD
