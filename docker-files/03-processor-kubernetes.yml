@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/version: 1.0.0
+    app.kubernetes.io/name: discount-coupons-processor-kafka
+  name: discount-coupons-processor-kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/version: 1.0.0
+      app.kubernetes.io/name: discount-coupons-processor-kafka
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/version: 1.0.0
+        app.kubernetes.io/name: discount-coupons-processor-kafka
+    spec:
+      containers:
+        - env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: KAFKA_SVCNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: KAFKA_SVCNAME
+                  name: disco-config-map
+            - name: KAFKA_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: KAFKA_PORT
+                  name: disco-config-map
+          image: docker.io/kmmraj/discount-coupons-processor-kafka:1.0.0
+          imagePullPolicy: Always
+          name: discount-coupons-processor-kafka

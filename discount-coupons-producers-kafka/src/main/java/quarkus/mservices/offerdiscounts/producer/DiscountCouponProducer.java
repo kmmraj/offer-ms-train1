@@ -57,6 +57,7 @@ public class DiscountCouponProducer implements DiscountCouponProducerInterface {
     @Produces(MediaType.APPLICATION_JSON)
     public DiscountCoupon createRequest() {
         final UUID uuid = UUID.randomUUID();
+        logger.info("Sending request to Kafka topic: " + uuid.toString());
         quoteRequestEmitter.send(uuid.toString());
         var discountCoupon = new DiscountCoupon(uuid.toString(),0);
         URI uriBase = UriBuilder.fromUri("http://" + host + ":" + port + "/").build();
@@ -65,6 +66,7 @@ public class DiscountCouponProducer implements DiscountCouponProducerInterface {
                 coupon -> {
                     logger.info(coupon);
                     discountCoupon.discountAmount = coupon.discountAmount;
+                    logger.info("Discount amount: " + discountCoupon.discountAmount);
                 },
                 failure -> logger.error("Failed with " , failure)
         );

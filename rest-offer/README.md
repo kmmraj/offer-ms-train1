@@ -1006,31 +1006,87 @@ quarkus.grpc.clients.offerprice.port=9010
 - Test the application using the following command
   ```shell
      curl -X POST  http://localhost:8093/discounts/request
- ```
+  ```
 
 #### Deploy the app in kubernetes
-- Create the docker images for the modules
+
+-  Create the docker images for the modules
+  
   ```shell
   mvn -f discount-coupons-producers-kafka clean package -Dquarkus.container-image.push=true
   mvn -f discount-coupons-processor-kafka clean package -Dquarkus.container-image.push=true
   ```
-- Create the kubernetes resources
+
+[//]: # (- Create the kubernetes resources)
+
+[//]: # (  ```shell)
+
+[//]: # (  mvn -f discount-coupons-producers-kafka clean package -Dquarkus.kubernetes.deploy=true)
+
+[//]: # (  mvn -f discount-coupons-processor-kafka clean package -Dquarkus.kubernetes.deploy=true)
+
+[//]: # (  ```)
+[//]: # (- Create the docker compose file and convert it to kubernetes resources)
+- Lets deploy it in minikube
+- Create a miniube cluster
   ```shell
-  mvn -f discount-coupons-producers-kafka clean package -Dquarkus.kubernetes.deploy=true
-  mvn -f discount-coupons-processor-kafka clean package -Dquarkus.kubernetes.deploy=true
+  minikube start  -p kafka --cpus=4 --memory=4096
   ```
-- Create the docker compose file and convert it to kubernetes resources
+- We will use strimzi to deploy kafka in minikube
+  https://strimzi.io/quickstarts/
+  - Before deploying the Strimzi cluster operator, create a namespace called kafka:
+
+    ```shell
+    kubectl create namespace kafka
+    ```
+Apply the Strimzi install files, including ClusterRoles, ClusterRoleBindings and some Custom Resource Definitions (CRDs). The CRDs define the schemas used for the custom resources (CRs, such as Kafka, KafkaTopic and so on) you will be using to manage Kafka clusters, topics and users.
+
+ ```shell
+ kubectl create -f 'https://strimzi.io/install/latest?namespace=kafka' -n kafka
+ ```
+
+Follow the deployment of the Strimzi cluster operator:
+
+```shell 
+kubectl get pod -n kafka --watch
+```
+You can also follow the operator’s log:
+```shell 
+kubectl logs deployment/strimzi-cluster-operator -n kafka -f
+```
+Once the operator is running it will watch for new custom resources and create the Kafka cluster, topics or users that correspond to those custom resources.
+
+Create an Apache Kafka cluster
+Create a new Kafka custom resource to get a small persistent Apache Kafka Cluster with one node for Apache Zookeeper and Apache Kafka:
+
+# Apply the `Kafka` Cluster CR file
+```shell 
+kubectl apply -f https://strimzi.io/examples/latest/kafka/kafka-persistent-single.yaml -n kafka
+```
+Wait while Kubernetes starts the required pods, services, and so on:
+
+```shell 
+kubectl wait kafka/my-cluster --for=condition=Ready --timeout=300s -n kafka
+```
+The above command might timeout if you’re downloading images over a slow connection. If that happens you can always run it again.
 - Deploy it in kubernetes
   ```shell
-  kubectl apply -f 01-zookeeper.yaml
-  kubectl apply -f 02-kafka.yaml
-  kubectl apply -f 03-applications.yaml
+  cd docker-files
+  kubectl apply -f 01-configmap.yaml -n kafka
+  kubectl apply -f 03-processor-kubernetes.yaml -n kafka
+  kubectl apply -f 04-producer-kubernetes.yaml -n kafka
+    ```
+  
+- This is a node port service, so we can access it using the node ip and the node port
+  ```shell
+  kubectl port-forward svc/discount-coupons-producers-kafka 8080:8080
   ```
+  
 - Access the application
-  ```url
-  http://localhost:8081/discount-coupons
+  ```shell
+  curl -X POST http://127.0.0.1:8080/discounts/request
   ```
-TBD - https://strimzi.io/quickstarts/ (Kafka on kubernetes)
+
 #### Ex-19: API Gateway with Istio
 
 #### Ex-20: Continuous Delivery with ArgoCD

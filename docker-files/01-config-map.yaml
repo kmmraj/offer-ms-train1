@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  DISCO_HOSTNAME: discount-coupons-producers-kafka
+  DISCO_PORT: "8080"
+  KAFKA_SVCNAME: my-cluster-kafka-bootstrap
+  KAFKA_PORT: "9092"
+kind: ConfigMap
+metadata:
+  name: disco-config-map
+  namespace: kafka
