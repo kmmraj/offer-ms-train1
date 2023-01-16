@@ -620,6 +620,7 @@ quarkus.grpc.clients.offerprice.port=9010
 
   ```
   kubectl label namespace istio-system istio-injection=enabled
+  kubectl label namespace default istio-injection=enabled
   ```
 
 - Note : In macOS machine, apply the below in the terminal where the mvn command is executed
@@ -1059,7 +1060,7 @@ Once the operator is running it will watch for new custom resources and create t
 Create an Apache Kafka cluster
 Create a new Kafka custom resource to get a small persistent Apache Kafka Cluster with one node for Apache Zookeeper and Apache Kafka:
 
-# Apply the `Kafka` Cluster CR file
+#### Apply the `Kafka` Cluster CR file
 ```shell 
 kubectl apply -f https://strimzi.io/examples/latest/kafka/kafka-persistent-single.yaml -n kafka
 ```
